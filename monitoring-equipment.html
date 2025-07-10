@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>监控设备管理 - 原型页面</title>
+    <!-- 引入 Ant Design CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/antd@5.0.0/dist/reset.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1890ff;
+            --success-color: #52c41a;
+            --error-color: #ff4d4f;
+            --warning-color: #faad14;
+            --border-color: #d9d9d9;
+            --table-header-bg: #fafafa;
+            --table-hover-bg: #f5f5f5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+            font-size: 14px;
+            line-height: 1.5715;
+            color: rgba(0, 0, 0, 0.85);
+            background: #f5f5f5;
+        }
+
+        .container {
+            padding: 24px;
+            min-height: 100vh;
+        }
+
+        /* 标签页样式 */
+        .tabs-container {
+            background: #fff;
+            border-radius: 6px;
+            padding: 16px 24px 0;
+            margin-bottom: 0;
+        }
+
+        .tabs-nav {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 0;
+        }
+
+        .tab-item {
+            padding: 12px 16px;
+            color: rgba(0, 0, 0, 0.65);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-right: 32px;
+            font-size: 14px;
+            position: relative;
+        }
+
+        .tab-item.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .tab-content {
+            background: #fff;
+            padding: 24px;
+            border-radius: 0 0 6px 6px;
+        }
+
+        /* 搜索表单样式 */
+        .search-form {
+            background: #fff;
+            padding: 16px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border-color);
+        }
+
+        .form-row {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .form-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-item label {
+            white-space: nowrap;
+            color: rgba(0, 0, 0, 0.85);
+            min-width: 70px;
+        }
+
+        .form-input {
+            padding: 4px 11px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 14px;
+            width: 200px;
+            height: 32px;
+        }
+
+        .form-select {
+            padding: 4px 11px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 14px;
+            width: 150px;
+            height: 32px;
+            background: #fff;
+        }
+
+        .btn {
+            padding: 4px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            height: 32px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #40a9ff;
+            border-color: #40a9ff;
+        }
+
+        .btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        /* 表格容器样式 */
+        .table-container {
+            background: #fff;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+
+        .table-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: rgba(0, 0, 0, 0.85);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* 表格样式 */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .table th {
+            background: var(--table-header-bg);
+            padding: 12px 16px;
+            text-align: center;
+            font-weight: 500;
+            color: rgba(0, 0, 0, 0.85);
+            border-bottom: 1px solid var(--border-color);
+            white-space: nowrap;
+        }
+
+        .table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+            color: rgba(0, 0, 0, 0.85);
+            text-align: center;
+        }
+
+        .table tbody tr:hover {
+            background: var(--table-hover-bg);
+        }
+
+        .table th:first-child,
+        .table td:first-child {
+            text-align: center;
+            width: 60px;
+        }
+
+        /* 操作列左对齐 */
+        .table th:last-child,
+        .table td:last-child {
+            text-align: left;
+        }
+
+        /* 标签样式 */
+        .tag {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            border: 1px solid;
+            display: inline-block;
+        }
+
+        .tag-success {
+            color: var(--success-color);
+            background: #f6ffed;
+            border-color: #b7eb8f;
+        }
+
+        .tag-error {
+            color: var(--error-color);
+            background: #fff2f0;
+            border-color: #ffccc7;
+        }
+
+        .tag-warning {
+            color: var(--warning-color);
+            background: #fffbe6;
+            border-color: #ffe58f;
+        }
+
+        /* 操作按钮样式 */
+        .action-btn {
+            color: var(--primary-color);
+            cursor: pointer;
+            text-decoration: none;
+            margin-right: 12px;
+            font-size: 14px;
+        }
+
+        .action-btn:hover {
+            text-decoration: underline;
+        }
+
+        /* 分页样式 */
+        .pagination {
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .pagination-info {
+            color: rgba(0, 0, 0, 0.65);
+            font-size: 14px;
+        }
+
+        .pagination-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .page-btn {
+            padding: 4px 8px;
+            border: 1px solid var(--border-color);
+            background: #fff;
+            cursor: pointer;
+            border-radius: 4px;
+            min-width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .page-btn.active {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            color: #fff;
+        }
+
+        .page-btn:hover:not(.active) {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        /* 图标样式 */
+        .icon {
+            font-style: normal;
+            font-size: 14px;
+        }
+
+        /* 响应式 */
+        @media (max-width: 1400px) {
+            .form-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+            
+            .form-item {
+                width: 100%;
+            }
+            
+            .form-input,
+            .form-select {
+                width: 200px;
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .table {
+                font-size: 12px;
+            }
+            
+            .table th,
+            .table td {
+                padding: 8px 12px;
+            }
+        }
+
+        /* 模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.45);
+            z-index: 1000;
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: #fff;
+            border-radius: 6px;
+            width: 520px;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow: auto;
+        }
+
+        .modal-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 4px;
+            color: rgba(0, 0, 0, 0.85);
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 4px 11px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 14px;
+            height: 32px;
+        }
+
+        .toast {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 12px 16px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+            z-index: 1001;
+            display: none;
+            min-width: 300px;
+        }
+
+        .toast.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .toast-success {
+            border-left: 4px solid var(--success-color);
+        }
+
+        .toast-error {
+            border-left: 4px solid var(--error-color);
+        }
+
+        /* 详情模态框样式 */
+        .detail-tab-item {
+            padding: 12px 24px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            color: rgba(0, 0, 0, 0.65);
+            font-size: 14px;
+            margin-right: 32px;
+        }
+
+        .detail-tab-item.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .detail-tab-content {
+            padding: 16px 0;
+        }
+
+        .detail-row {
+            display: flex;
+            margin-bottom: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .detail-label {
+            width: 120px;
+            font-weight: 500;
+            color: rgba(0, 0, 0, 0.85);
+            flex-shrink: 0;
+        }
+
+        .detail-value {
+            flex: 1;
+            color: rgba(0, 0, 0, 0.65);
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 标签页 -->
+        <div class="tabs-container">
+            <div class="tabs-nav">
+                <div class="tab-item active" data-tab="station">站点设备</div>
+                <div class="tab-item" data-tab="warehouse">仓库设备</div>
+            </div>
+        </div>
+
+        <!-- 标签内容 -->
+        <div class="tab-content" id="station-tab">
+            <!-- 搜索表单 -->
+            <div class="search-form">
+                <div class="form-row">
+                    <div class="form-item">
+                        <label>站点编号:</label>
+                        <input type="text" class="form-input" placeholder="请输入站点编号" id="stationCode">
+                    </div>
+                    <div class="form-item">
+                        <label>状态:</label>
+                        <select class="form-select" id="status">
+                            <option value="">请选择状态</option>
+                            <option value="在线">在线</option>
+                            <option value="离线">离线</option>
+                            <option value="未安装">未安装</option>
+                        </select>
+                    </div>
+                    <div class="form-item">
+                        <label>管理机构:</label>
+                        <input type="text" class="form-input" placeholder="请选择" id="managementOrg">
+                    </div>
+                    <div class="form-item">
+                        <label>行政区划:</label>
+                        <select class="form-select" id="administrativeArea">
+                            <option value="">请选择行政区划</option>
+                            <option value="万州区">万州区</option>
+                            <option value="涪陵区">涪陵区</option>
+                            <option value="渝中区">渝中区</option>
+                            <option value="大渡口区">大渡口区</option>
+                            <option value="江北区">江北区</option>
+                            <option value="沙坪坝区">沙坪坝区</option>
+                        </select>
+                    </div>
+                    <div class="form-item">
+                        <label>验收状态:</label>
+                        <select class="form-select" id="acceptanceStatus">
+                            <option value="">请选择验收状态</option>
+                            <option value="合格">合格</option>
+                            <option value="不合格">不合格</option>
+                        </select>
+                    </div>
+                    <div class="form-item">
+                        <button class="btn btn-primary" onclick="handleSearch()">查询</button>
+                        <button class="btn" onclick="handleReset()">重置</button>
+                        <button class="btn">更多</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 数据表格 -->
+            <div class="table-container">
+                <div class="table-header">
+                    <div class="table-title">
+                        <span>监控设备列表</span>
+                        <span class="icon" style="color: var(--primary-color);">🔍</span>
+                    </div>
+                    <div class="toolbar">
+                        <button class="btn" onclick="handleExport()">
+                            <span class="icon">📤</span> 导出
+                        </button>
+                        <button class="btn" onclick="handleFullscreen()">
+                            <span class="icon">⛶</span>
+                        </button>
+                        <button class="btn" onclick="handleRefresh()">
+                            <span class="icon">🔄</span>
+                        </button>
+                        <button class="btn" onclick="handleSettings()">
+                            <span class="icon">⚙️</span>
+                        </button>
+                    </div>
+                </div>
+
+                <table class="table" id="dataTable">
+                    <thead>
+                        <tr>
+                            <th>序号</th>
+                            <th>站点编号</th>
+                            <th>状态</th>
+                            <th>管理机构</th>
+                            <th>行政区划</th>
+                            <th>监控点数量</th>
+                            <th>售彩范围</th>
+                            <th>站点地址</th>
+                            <th>建站日期</th>
+                            <th>验收状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- 数据将通过 JavaScript 动态填充 -->
+                    </tbody>
+                </table>
+
+                <div class="pagination">
+                    <div class="pagination-info">
+                        共 <span id="totalCount">2640</span> 条 | <span id="rangeInfo">1-20</span>
+                    </div>
+                    <div class="pagination-controls">
+                        <button class="page-btn" onclick="goToPage(1)">«</button>
+                        <button class="page-btn" onclick="goToPage(currentPage - 1)">‹</button>
+                        <button class="page-btn active" onclick="goToPage(1)">1</button>
+                        <button class="page-btn" onclick="goToPage(2)">2</button>
+                        <button class="page-btn" onclick="goToPage(3)">3</button>
+                        <button class="page-btn" onclick="goToPage(4)">4</button>
+                        <button class="page-btn" onclick="goToPage(5)">5</button>
+                        <button class="page-btn" onclick="goToPage(6)">6</button>
+                        <span>...</span>
+                        <button class="page-btn" onclick="goToPage(132)">132</button>
+                        <button class="page-btn" onclick="goToPage(currentPage + 1)">›</button>
+                        <button class="page-btn" onclick="goToPage(132)">»</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 仓库设备标签内容 -->
+        <div class="tab-content" id="warehouse-tab" style="display: none;">
+            <div style="padding: 48px; text-align: center; color: rgba(0, 0, 0, 0.45);">
+                <div style="font-size: 16px; margin-bottom: 8px;">仓库设备管理功能开发中...</div>
+                <div style="font-size: 14px;">敬请期待</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 编辑模态框 -->
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <div class="modal-header">编辑站点信息</div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>站点编号</label>
+                    <input type="text" id="editStationCode" required>
+                </div>
+                <div class="form-group">
+                    <label>状态</label>
+                    <select id="editStatus" required>
+                        <option value="在线">在线</option>
+                        <option value="离线">离线</option>
+                        <option value="未安装">未安装</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>管理机构</label>
+                    <input type="text" id="editManagementOrg" required>
+                </div>
+                <div class="form-group">
+                    <label>站点地址</label>
+                    <input type="text" id="editStationAddress" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="closeEditModal()">取消</button>
+                <button class="btn btn-primary" onclick="saveEdit()">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 验收模态框 -->
+    <div class="modal" id="acceptanceModal">
+        <div class="modal-content" style="width: 600px;">
+            <div class="modal-header">验收信息</div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>站点编号</label>
+                    <input type="text" id="acceptanceStationCode" readonly>
+                </div>
+                <div class="form-group">
+                    <label>是否安装</label>
+                    <select id="isInstalled" onchange="toggleInstallationFields()">
+                        <option value="">请选择</option>
+                        <option value="已安装">已安装</option>
+                        <option value="未安装">未安装</option>
+                    </select>
+                </div>
+                
+                <!-- 未安装时显示 -->
+                <div id="notInstalledFields" style="display: none;">
+                    <div class="form-group">
+                        <label>未安装原因</label>
+                        <textarea id="notInstalledReason" rows="3" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; resize: vertical;"></textarea>
+                    </div>
+                </div>
+                
+                <!-- 已安装时显示 -->
+                <div id="installedFields" style="display: none;">
+                    <div class="form-group">
+                        <label>固定位摄像头</label>
+                        <input type="text" id="fixedPosition">
+                    </div>
+                    <div class="form-group">
+                        <label>原因</label>
+                        <textarea id="fixedPositionReason" rows="2" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; resize: vertical;"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>云台摄像头</label>
+                        <input type="text" id="cloudPosition">
+                    </div>
+                    <div class="form-group">
+                        <label>原因</label>
+                        <textarea id="cloudPositionReason" rows="2" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; resize: vertical;"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>是否通过验收</label>
+                        <select id="acceptanceResult">
+                            <option value="">请选择</option>
+                            <option value="通过">通过</option>
+                            <option value="不通过">不通过</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="closeAcceptanceModal()">取消</button>
+                <button class="btn btn-primary" onclick="saveAcceptance()">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 详情模态框 -->
+    <div class="modal" id="detailModal">
+        <div class="modal-content" style="width: 800px; max-height: 80vh; overflow-y: auto;">
+            <div class="modal-header">站点详情</div>
+            <div class="modal-body">
+                <div style="display: flex; border-bottom: 1px solid var(--border-color); margin-bottom: 16px;">
+                    <div class="detail-tab-item active" data-tab="basic" onclick="switchDetailTab('basic')">基础数据</div>
+                    <div class="detail-tab-item" data-tab="acceptance" onclick="switchDetailTab('acceptance')">验收数据</div>
+                </div>
+                
+                <!-- 基础数据标签 -->
+                <div id="basicDataTab" class="detail-tab-content">
+                    <div class="detail-row">
+                        <div class="detail-label">站点编号:</div>
+                        <div class="detail-value" id="detailStationCode"></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">状态:</div>
+                        <div class="detail-value" id="detailStatus"></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">管理机构:</div>
+                        <div class="detail-value" id="detailManagementOrg"></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">行政区划:</div>
+                        <div class="detail-value" id="detailAdministrativeArea"></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">监控点数量:</div>
+                        <div class="detail-value" id="detailMonitorCount"></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">售彩范围:</div>
+                        <div class="detail-value" id="detailSaleRange"></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">站点地址:</div>
+                        <div class="detail-value" id="detailStationAddress"></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">建站日期:</div>
+                        <div class="detail-value" id="detailBuildDate"></div>
+                    </div>
+                </div>
+                
+                <!-- 验收数据标签 -->
+                <div id="acceptanceDataTab" class="detail-tab-content" style="display: none;">
+                    <div class="detail-row">
+                        <div class="detail-label">是否安装:</div>
+                        <div class="detail-value" id="detailIsInstalled">已安装</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">固定位摄像头:</div>
+                        <div class="detail-value" id="detailFixedPosition">收银台右侧</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">原因:</div>
+                        <div class="detail-value" id="detailFixedPositionReason">视角最佳，能够清晰监控销售台面</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">云台摄像头:</div>
+                        <div class="detail-value" id="detailCloudPosition">店内中央吊顶</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">原因:</div>
+                        <div class="detail-value" id="detailCloudPositionReason">覆盖全店监控范围</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">验收结果:</div>
+                        <div class="detail-value" id="detailAcceptanceResult">通过</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">验收状态:</div>
+                        <div class="detail-value" id="detailAcceptanceStatusData">合格</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">验收日期:</div>
+                        <div class="detail-value" id="detailAcceptanceDate">2023-12-22 15:30:00</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="closeDetailModal()">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 消息提示 -->
+    <div class="toast" id="toast">
+        <div id="toastMessage"></div>
+    </div>
+
+    <script>
+        // 模拟数据
+        const mockData = [
+            {
+                id: 1,
+                stationCode: '40010001',
+                status: '在线',
+                managementOrg: '渝东北',
+                administrativeArea: '万州区',
+                monitorCount: 2,
+                saleRange: '电脑票|即开票',
+                stationAddress: '万州区五桥天星路299号',
+                buildDate: '2023-12-22 10:51:45',
+                acceptanceStatus: '合格'
+            },
+            {
+                id: 2,
+                stationCode: '40010002',
+                status: '离线',
+                managementOrg: '渝东北',
+                administrativeArea: '万州区',
+                monitorCount: 2,
+                saleRange: '电脑票|即开票',
+                stationAddress: '万州区静园路697号',
+                buildDate: '2010-05-18 00:00:00',
+                acceptanceStatus: '不合格'
+            },
+            {
+                id: 3,
+                stationCode: '40010004',
+                status: '离线',
+                managementOrg: '渝东北',
+                administrativeArea: '万州区',
+                monitorCount: 2,
+                saleRange: '电脑票',
+                stationAddress: '万州区王牌路446号',
+                buildDate: '2002-11-01 00:00:00',
+                acceptanceStatus: '合格'
+            },
+            {
+                id: 4,
+                stationCode: '40010005',
+                status: '离线',
+                managementOrg: '渝东北',
+                administrativeArea: '万州区',
+                monitorCount: 2,
+                saleRange: '即开票',
+                stationAddress: '万州区国本路177号附4号',
+                buildDate: '2002-12-01 00:00:00',
+                acceptanceStatus: '不合格'
+            },
+            {
+                id: 5,
+                stationCode: '40010006',
+                status: '离线',
+                managementOrg: '渝东北',
+                administrativeArea: '万州区',
+                monitorCount: 2,
+                saleRange: '电脑票|即开票',
+                stationAddress: '万州区五桥百安大道93号门市',
+                buildDate: '2004-11-01 00:00:00',
+                acceptanceStatus: '合格'
+            },
+            {
+                id: 6,
+                stationCode: '40010008',
+                status: '离线',
+                managementOrg: '渝东北',
+                administrativeArea: '万州区',
+                monitorCount: 2,
+                saleRange: '电脑票',
+                stationAddress: '万州区王牌路2055号',
+                buildDate: '2020-04-23 00:00:00',
+                acceptanceStatus: '合格'
+            },
+            {
+                id: 7,
+                stationCode: '40010009',
+                status: '离线',
+                managementOrg: '渝东北',
+                administrativeArea: '万州区',
+                monitorCount: 2,
+                saleRange: '电脑票|即开票',
+                stationAddress: '万州区五桥天台路56号',
+                buildDate: '2024-10-12 16:22:40',
+                acceptanceStatus: '不合格'
+            },
+            {
+                id: 8,
+                stationCode: '40010010',
+                status: '未安装',
+                managementOrg: '渝东北',
+                administrativeArea: '万州区',
+                monitorCount: 2,
+                saleRange: '即开票',
+                stationAddress: '万州区王牌路62号附15',
+                buildDate: '2003-04-04 00:00:00',
+                acceptanceStatus: '不合格'
+            },
+            {
+                id: 9,
+                stationCode: '40010012',
+                status: '在线',
+                managementOrg: '渝东北',
+                administrativeArea: '万州区',
+                monitorCount: 2,
+                saleRange: '电脑票|即开票',
+                stationAddress: '万州区北滨大道二段748号8-8门市',
+                buildDate: '2024-04-12 10:55:11',
+                acceptanceStatus: '合格'
+            }
+        ];
+
+        let currentPage = 1;
+        let pageSize = 20;
+        let filteredData = [...mockData];
+        let currentEditRecord = null;
+
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', function() {
+            renderTable();
+            initTabSwitching();
+        });
+
+        // 标签切换功能
+        function initTabSwitching() {
+            const tabItems = document.querySelectorAll('.tab-item');
+            const stationTab = document.getElementById('station-tab');
+            const warehouseTab = document.getElementById('warehouse-tab');
+
+            tabItems.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // 移除所有active类
+                    tabItems.forEach(t => t.classList.remove('active'));
+                    // 添加active类到当前点击的标签
+                    this.classList.add('active');
+
+                    // 显示对应的内容
+                    const tabType = this.getAttribute('data-tab');
+                    if (tabType === 'station') {
+                        stationTab.style.display = 'block';
+                        warehouseTab.style.display = 'none';
+                    } else {
+                        stationTab.style.display = 'none';
+                        warehouseTab.style.display = 'block';
+                    }
+                });
+            });
+        }
+
+        // 渲染表格
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            const startIndex = (currentPage - 1) * pageSize;
+            const endIndex = Math.min(startIndex + pageSize, filteredData.length);
+            const pageData = filteredData.slice(startIndex, endIndex);
+
+            tbody.innerHTML = '';
+
+            pageData.forEach((record, index) => {
+                const row = document.createElement('tr');
+                // 根据验收状态和设备状态决定是否显示验收按钮
+                const acceptanceButton = (record.acceptanceStatus === '合格' || record.status === '未安装') ? '' : 
+                    `<a class="action-btn" onclick="handleAcceptance(${record.id})">验收</a>`;
+                
+                row.innerHTML = `
+                    <td>${startIndex + index + 1}</td>
+                    <td><a class="action-btn" onclick="handleViewDetail(${record.id})">${record.stationCode}</a></td>
+                    <td><span class="tag tag-${getStatusClass(record.status)}">${record.status}</span></td>
+                    <td>${record.managementOrg}</td>
+                    <td>${record.administrativeArea}</td>
+                    <td>${record.monitorCount}</td>
+                    <td>${record.saleRange}</td>
+                    <td>${record.stationAddress}</td>
+                    <td>${record.buildDate}</td>
+                    <td><span class="tag tag-${getAcceptanceStatusClass(record.acceptanceStatus)}">${record.acceptanceStatus}</span></td>
+                    <td>
+                        <a class="action-btn" onclick="handleEdit(${record.id})">编辑</a>
+                        <a class="action-btn" onclick="handleVideoPlay('${record.stationCode}')">视频播放</a>
+                        ${acceptanceButton}
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            updatePaginationInfo();
+        }
+
+        // 获取状态样式类
+        function getStatusClass(status) {
+            switch(status) {
+                case '在线': return 'success';
+                case '离线': return 'error';
+                case '未安装': return 'warning';
+                default: return 'success';
+            }
+        }
+
+        // 获取验收状态样式类
+        function getAcceptanceStatusClass(status) {
+            switch(status) {
+                case '合格': return 'success';
+                case '不合格': return 'error';
+                default: return 'success';
+            }
+        }
+
+        // 更新分页信息
+        function updatePaginationInfo() {
+            const total = filteredData.length;
+            const startIndex = (currentPage - 1) * pageSize + 1;
+            const endIndex = Math.min(currentPage * pageSize, total);
+            
+            document.getElementById('totalCount').textContent = '2640'; // 显示总数据量
+            document.getElementById('rangeInfo').textContent = `${startIndex}-${endIndex}`;
+        }
+
+        // 搜索功能
+        function handleSearch() {
+            const stationCode = document.getElementById('stationCode').value.trim();
+            const status = document.getElementById('status').value;
+            const managementOrg = document.getElementById('managementOrg').value.trim();
+            const administrativeArea = document.getElementById('administrativeArea').value;
+            const acceptanceStatus = document.getElementById('acceptanceStatus').value;
+
+            filteredData = mockData.filter(item => {
+                return (!stationCode || item.stationCode.includes(stationCode)) &&
+                       (!status || item.status === status) &&
+                       (!managementOrg || item.managementOrg.includes(managementOrg)) &&
+                       (!administrativeArea || item.administrativeArea === administrativeArea) &&
+                       (!acceptanceStatus || item.acceptanceStatus === acceptanceStatus);
+            });
+
+            currentPage = 1;
+            renderTable();
+            showToast('查询完成', 'success');
+        }
+
+        // 重置功能
+        function handleReset() {
+            document.getElementById('stationCode').value = '';
+            document.getElementById('status').value = '';
+            document.getElementById('managementOrg').value = '';
+            document.getElementById('administrativeArea').value = '';
+            document.getElementById('acceptanceStatus').value = '';
+            
+            filteredData = [...mockData];
+            currentPage = 1;
+            renderTable();
+            showToast('重置成功', 'success');
+        }
+
+        // 编辑功能
+        function handleEdit(id) {
+            currentEditRecord = mockData.find(item => item.id === id);
+            if (currentEditRecord) {
+                document.getElementById('editStationCode').value = currentEditRecord.stationCode;
+                document.getElementById('editStatus').value = currentEditRecord.status;
+                document.getElementById('editManagementOrg').value = currentEditRecord.managementOrg;
+                document.getElementById('editStationAddress').value = currentEditRecord.stationAddress;
+                
+                document.getElementById('editModal').classList.add('show');
+            }
+        }
+
+        // 保存编辑
+        function saveEdit() {
+            if (currentEditRecord) {
+                currentEditRecord.stationCode = document.getElementById('editStationCode').value;
+                currentEditRecord.status = document.getElementById('editStatus').value;
+                currentEditRecord.managementOrg = document.getElementById('editManagementOrg').value;
+                currentEditRecord.stationAddress = document.getElementById('editStationAddress').value;
+                
+                renderTable();
+                closeEditModal();
+                showToast('更新成功', 'success');
+            }
+        }
+
+        // 关闭编辑模态框
+        function closeEditModal() {
+            document.getElementById('editModal').classList.remove('show');
+            currentEditRecord = null;
+        }
+
+        // 视频播放
+        function handleVideoPlay(stationCode) {
+            showToast(`正在播放站点 ${stationCode} 的监控视频`, 'success');
+        }
+
+        // 导出功能
+        function handleExport() {
+            showToast('导出功能开发中...', 'success');
+        }
+
+        // 全屏功能
+        function handleFullscreen() {
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            } else {
+                document.documentElement.requestFullscreen();
+            }
+        }
+
+        // 刷新功能
+        function handleRefresh() {
+            renderTable();
+            showToast('刷新成功', 'success');
+        }
+
+        // 设置功能
+        function handleSettings() {
+            showToast('设置功能开发中...', 'success');
+        }
+
+        // 分页功能
+        function goToPage(page) {
+            const totalPages = Math.ceil(filteredData.length / pageSize);
+            if (page >= 1 && page <= totalPages) {
+                currentPage = page;
+                renderTable();
+                updatePageButtons();
+            }
+        }
+
+        // 更新分页按钮
+        function updatePageButtons() {
+            const buttons = document.querySelectorAll('.page-btn');
+            buttons.forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent == currentPage) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+
+        // 显示消息提示
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const messageEl = document.getElementById('toastMessage');
+            
+            messageEl.textContent = message;
+            toast.className = `toast toast-${type} show`;
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // 验收功能
+        function handleAcceptance(id) {
+            currentEditRecord = mockData.find(item => item.id === id);
+            if (currentEditRecord) {
+                document.getElementById('acceptanceStationCode').value = currentEditRecord.stationCode;
+                document.getElementById('isInstalled').value = '';
+                document.getElementById('notInstalledReason').value = '';
+                document.getElementById('fixedPosition').value = '';
+                document.getElementById('fixedPositionReason').value = '';
+                document.getElementById('cloudPosition').value = '';
+                document.getElementById('cloudPositionReason').value = '';
+                document.getElementById('acceptanceResult').value = '';
+                
+                // 隐藏所有条件字段
+                document.getElementById('notInstalledFields').style.display = 'none';
+                document.getElementById('installedFields').style.display = 'none';
+                
+                document.getElementById('acceptanceModal').classList.add('show');
+            }
+        }
+
+        // 切换安装状态相关字段
+        function toggleInstallationFields() {
+            const isInstalled = document.getElementById('isInstalled').value;
+            const notInstalledFields = document.getElementById('notInstalledFields');
+            const installedFields = document.getElementById('installedFields');
+            
+            if (isInstalled === '未安装') {
+                notInstalledFields.style.display = 'block';
+                installedFields.style.display = 'none';
+            } else if (isInstalled === '已安装') {
+                notInstalledFields.style.display = 'none';
+                installedFields.style.display = 'block';
+            } else {
+                notInstalledFields.style.display = 'none';
+                installedFields.style.display = 'none';
+            }
+        }
+
+        // 保存验收信息
+        function saveAcceptance() {
+            const isInstalled = document.getElementById('isInstalled').value;
+            if (!isInstalled) {
+                showToast('请选择是否安装', 'error');
+                return;
+            }
+            
+            if (isInstalled === '未安装') {
+                const reason = document.getElementById('notInstalledReason').value.trim();
+                if (!reason) {
+                    showToast('请填写未安装原因', 'error');
+                    return;
+                }
+            } else if (isInstalled === '已安装') {
+                const fixedPosition = document.getElementById('fixedPosition').value.trim();
+                const acceptanceResult = document.getElementById('acceptanceResult').value;
+                
+                if (!fixedPosition) {
+                    showToast('请填写固定位摄像头', 'error');
+                    return;
+                }
+                if (!acceptanceResult) {
+                    showToast('请选择验收结果', 'error');
+                    return;
+                }
+                
+                // 更新验收状态
+                if (currentEditRecord) {
+                    currentEditRecord.acceptanceStatus = acceptanceResult === '通过' ? '合格' : '不合格';
+                }
+            }
+            
+            renderTable();
+            closeAcceptanceModal();
+            showToast('验收信息保存成功', 'success');
+        }
+
+        // 关闭验收模态框
+        function closeAcceptanceModal() {
+            document.getElementById('acceptanceModal').classList.remove('show');
+        }
+
+        // 查看详情
+        function handleViewDetail(id) {
+            const record = mockData.find(item => item.id === id);
+            if (record) {
+                // 填充基础数据
+                document.getElementById('detailStationCode').textContent = record.stationCode;
+                document.getElementById('detailStatus').innerHTML = `<span class="tag tag-${getStatusClass(record.status)}">${record.status}</span>`;
+                document.getElementById('detailManagementOrg').textContent = record.managementOrg;
+                document.getElementById('detailAdministrativeArea').textContent = record.administrativeArea;
+                document.getElementById('detailMonitorCount').textContent = record.monitorCount;
+                document.getElementById('detailSaleRange').textContent = record.saleRange;
+                document.getElementById('detailStationAddress').textContent = record.stationAddress;
+                document.getElementById('detailBuildDate').textContent = record.buildDate;
+                
+                // 填充验收数据
+                document.getElementById('detailAcceptanceStatusData').innerHTML = `<span class="tag tag-${getAcceptanceStatusClass(record.acceptanceStatus)}">${record.acceptanceStatus}</span>`;
+                
+                // 显示详情模态框
+                document.getElementById('detailModal').classList.add('show');
+                
+                // 默认显示基础数据标签
+                switchDetailTab('basic');
+            }
+        }
+
+        // 切换详情标签
+        function switchDetailTab(tabName) {
+            // 更新标签状态
+            document.querySelectorAll('.detail-tab-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+            
+            // 显示对应内容
+            document.getElementById('basicDataTab').style.display = tabName === 'basic' ? 'block' : 'none';
+            document.getElementById('acceptanceDataTab').style.display = tabName === 'acceptance' ? 'block' : 'none';
+        }
+
+        // 关闭详情模态框
+        function closeDetailModal() {
+            document.getElementById('detailModal').classList.remove('show');
+        }
+
+        // 点击模态框外部关闭
+        document.getElementById('editModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeEditModal();
+            }
+        });
+
+        document.getElementById('acceptanceModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeAcceptanceModal();
+            }
+        });
+
+        document.getElementById('detailModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeDetailModal();
+            }
+        });
+    </script>
+</body>
+</html> 
