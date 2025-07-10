@@ -1,0 +1,2122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>原型图</title>
+    <!-- 引入 ECharts -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <!-- 引入中国地图数据 -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/map/js/china.js"></script>
+    <!-- 引入重庆市地图数据 -->
+    <script src="https://geo.datav.aliyun.com/areas_v3/bound/500000_full.json"></script>
+    <style>
+        :root {
+            --primary-color: #1890ff;
+            --dark-bg: #1e2c3c;
+            --nav-text: #8b9eb5;
+            --nav-active: #1890ff;
+            --nav-hover-bg: rgba(24, 144, 255, 0.1);
+            --header-height: 56px;
+            --sidebar-width: 240px;
+            --border-color: #e8e8e8;
+            --table-header-bg: #fafafa;
+            --table-hover-bg: #f5f5f5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #333;
+            background: #f0f2f5;
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* 左侧导航样式 */
+        .side-nav {
+            width: 200px;
+            background: #001529;
+            height: 100vh;
+            padding: 20px 0;
+            color: #fff;
+            position: fixed;
+            left: 0;
+            top: 0;
+        }
+
+        .nav-group {
+            margin-bottom: 10px;
+        }
+
+        .nav-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-item.active {
+            background: #1890ff;
+        }
+
+        .nav-icon {
+            margin-right: 10px;
+            font-size: 16px;
+        }
+
+        .arrow {
+            margin-left: auto;
+            font-size: 12px;
+            transition: transform 0.3s;
+        }
+
+        .sub-nav {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .sub-nav .nav-item {
+            padding-left: 48px;
+        }
+
+        /* 主内容区域样式 */
+        .main-content {
+            flex: 1;
+            margin-left: 200px;
+            padding: 20px;
+            background: #f0f2f5;
+        }
+
+        /* 顶部导航 */
+        .top-nav {
+            background: white;
+            padding: 16px 24px;
+            margin-bottom: 24px;
+            border-radius: 4px;
+            box-shadow: 0 1px 4px rgba(0,21,41,0.08);
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .breadcrumb-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .breadcrumb-separator {
+            margin: 0 8px;
+            color: #999;
+        }
+
+        .breadcrumb-item.active {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .nav-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .nav-tab {
+            padding: 12px 24px;
+            color: #666;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-right: 32px;
+        }
+
+        .nav-tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        /* 查询条件样式 */
+        .search-bar {
+            background: #fff;
+            padding: 16px;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .search-content {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .form-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .form-item label {
+            margin-right: 8px;
+            color: #666;
+            white-space: nowrap;
+        }
+
+        .time-type-group {
+            display: flex;
+            gap: 16px;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .radio-label input[type="radio"] {
+            margin-right: 4px;
+        }
+
+        .date-picker-wrapper {
+            position: relative;
+        }
+
+        .date-picker {
+            height: 32px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            padding: 0 12px;
+            font-size: 14px;
+            color: #666;
+            background: #fff;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .date-picker:hover {
+            border-color: #1890ff;
+        }
+
+        .date-picker:focus {
+            outline: none;
+            border-color: #1890ff;
+            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+        }
+
+        #yearPicker {
+            min-width: 120px;
+        }
+
+        /* 表格样式 */
+        .table-container {
+            background: white;
+            border-radius: 4px;
+            box-shadow: 0 1px 4px rgba(0,21,41,0.08);
+        }
+
+        .table-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: var(--table-header-bg);
+            padding: 16px;
+            text-align: left;
+            font-weight: 500;
+            color: #333;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        td {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        tr:hover td {
+            background: var(--table-hover-bg);
+        }
+
+        /* 图表样式 */
+        .chart-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .chart-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .map-container {
+            grid-column: span 2;
+        }
+
+        .chart-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 16px;
+            color: #333;
+        }
+
+        .highlight {
+            color: #1890ff;
+            margin-right: 4px;
+        }
+
+        .chart-box {
+            width: 100%;
+            height: 300px;
+        }
+
+        .chart-content {
+            display: flex;
+            align-items: center;
+        }
+
+        .chart-stats {
+            padding-left: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 10px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1890ff;
+            margin: 8px 0;
+        }
+
+        .stat-percent {
+            font-size: 16px;
+            color: #333;
+        }
+
+        .map-content {
+            display: flex;
+            gap: 20px;
+            height: 400px;
+        }
+
+        .map-box {
+            width: 50%;
+            height: 100%;
+        }
+
+        .table-container {
+            width: 50%;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .data-table thead {
+            background: #fafafa;
+        }
+
+        .data-table tbody {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .data-table th {
+            font-weight: 500;
+            color: #666;
+        }
+
+        .data-table tbody tr:hover {
+            background: #f5f5f5;
+        }
+
+        .data-table tfoot td {
+            font-weight: bold;
+            background: #fafafa;
+            border-top: 2px solid #f0f0f0;
+        }
+
+        /* 确保表格行的布局正确 */
+        .data-table tr {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .gender-content {
+            display: flex;
+            gap: 20px;
+            height: 300px;
+        }
+
+        .gender-chart {
+            width: 66.67%;
+            height: 100%;
+        }
+
+        .gender-stats {
+            width: 33.33%;
+            display: flex;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .stats-list {
+            width: 100%;
+        }
+
+        .stats-item {
+            padding: 15px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .stats-item:last-child {
+            border-bottom: none;
+        }
+
+        .stats-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .stats-value {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stats-value .number {
+            font-size: 16px;
+            font-family: monospace;
+            color: #1890ff;
+            font-weight: 500;
+        }
+
+        .stats-value .percent {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .stats-sales {
+            margin-top: 8px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .stats-sales .sales-label {
+            color: #999;
+        }
+
+        .stats-sales .sales-value {
+            color: #1890ff;
+            font-weight: 500;
+        }
+
+        /* 级联选择器样式 */
+        .cascader-wrapper {
+            position: relative;
+            width: 200px;
+        }
+
+        .cascader-input {
+            height: 32px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            padding: 0 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            background: #fff;
+            color: #666;
+            transition: all 0.3s;
+        }
+
+        .cascader-input:hover {
+            border-color: #1890ff;
+        }
+
+        .arrow-down {
+            border: solid #999;
+            border-width: 0 1px 1px 0;
+            display: inline-block;
+            padding: 3px;
+            transform: rotate(45deg);
+            margin-top: -2px;
+            transition: transform 0.3s;
+        }
+
+        .arrow-down.open {
+            transform: rotate(-135deg);
+            margin-top: 2px;
+        }
+
+        .cascader-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 4px;
+            background: #fff;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            display: none;
+            z-index: 1000;
+        }
+
+        .cascader-dropdown.show {
+            display: flex;
+        }
+
+        .cascader-menu {
+            width: 160px;
+            border-right: 1px solid #f0f0f0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .cascader-menu:last-child {
+            border-right: none;
+        }
+
+        .cascader-item {
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .cascader-item:hover {
+            background: #f5f5f5;
+        }
+
+        .cascader-item.selected {
+            background: #e6f7ff;
+            color: #1890ff;
+        }
+
+        /* AI助手样式 */
+        .ai-assistant {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            z-index: 1000;
+        }
+
+        .ai-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: #1890ff;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s;
+        }
+
+        .ai-icon:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .chat-container {
+            position: fixed;
+            right: 80px;
+            bottom: 80px;
+            width: 360px;
+            height: 480px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-container.show {
+            display: flex;
+        }
+
+        .chat-header {
+            padding: 16px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-title {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .chat-close {
+            font-size: 24px;
+            color: #999;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+
+        .message {
+            margin-bottom: 16px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message.user {
+            align-items: flex-end;
+        }
+
+        .message-content {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 8px;
+            background: #f5f5f5;
+            color: #333;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .message.user .message-content {
+            background: #1890ff;
+            color: white;
+        }
+
+        .chat-input-container {
+            padding: 16px;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+        }
+
+        .chat-input {
+            flex: 1;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            padding: 8px;
+            resize: none;
+            font-size: 14px;
+            line-height: 1.5;
+            max-height: 120px;
+            min-height: 36px;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: #1890ff;
+        }
+
+        .send-button {
+            width: 36px;
+            height: 36px;
+            border-radius: 4px;
+            border: none;
+            background: #1890ff;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .send-button:hover {
+            background: #40a9ff;
+        }
+
+        /* 页面布局样式 */
+        .page-container {
+            padding: 20px;
+        }
+
+        .page-content {
+            display: none;
+        }
+
+        .page-content.active {
+            display: block;
+        }
+
+        .chart-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .chart-card {
+            flex: 1;
+            background: #fff;
+            border-radius: 8px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .full-width {
+            width: 100%;
+        }
+
+        .chart-box {
+            height: 300px;
+        }
+
+        /* 导航菜单样式 */
+        .nav-menu {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 左侧导航栏 -->
+        <div class="side-nav">
+            <div class="nav-group">
+                <div class="nav-item">
+                    <span class="nav-icon">📊</span>
+                    <span>数据总览</span>
+                </div>
+            </div>
+            <div class="nav-group">
+                <div class="nav-item active">
+                    <span class="nav-icon">👥</span>
+                    <span>用户画像</span>
+                    <span class="arrow">▼</span>
+                </div>
+                <div class="sub-nav">
+                    <div class="nav-item active" data-page="basicProfile">
+                        <span>基础画像</span>
+                    </div>
+                    <div class="nav-item" data-page="consumeBehavior">
+                        <span>消费行为</span>
+                    </div>
+                    <div class="nav-item" data-page="lotteryPreference">
+                        <span>彩种偏好</span>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-group">
+                <div class="nav-item">
+                    <span class="nav-icon">📈</span>
+                    <span>趋势分析</span>
+                </div>
+            </div>
+            <div class="nav-group">
+                <div class="nav-item">
+                    <span class="nav-icon">⚙️</span>
+                    <span>系统设置</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <!-- 顶部导航 -->
+            <div class="top-nav">
+                <div class="breadcrumb">
+                    <span class="breadcrumb-item">用户画像</span>
+                    <span class="breadcrumb-separator">/</span>
+                    <span class="breadcrumb-item active">基础画像</span>
+                </div>
+            </div>
+
+            <!-- 查询条件 -->
+            <div class="search-bar">
+                <div class="search-content">
+                    <div class="form-item">
+                        <label>区域：</label>
+                        <div class="cascader-wrapper">
+                            <div class="cascader-input" onclick="toggleCascader()">
+                                <span id="selected-area">重庆市</span>
+                                <i class="arrow-down"></i>
+                            </div>
+                            <div class="cascader-dropdown" id="cascader-dropdown">
+                                <div class="cascader-menu">
+                                    <div class="cascader-item selected" data-value="all">重庆市</div>
+                                </div>
+                                <div class="cascader-menu">
+                                    <div class="cascader-item" data-value="zhuchengnan">主城南</div>
+                                    <div class="cascader-item" data-value="zhuchengbei">主城北</div>
+                                    <div class="cascader-item" data-value="yudongnan">渝东南</div>
+                                    <div class="cascader-item" data-value="yudongbei">渝东北</div>
+                                    <div class="cascader-item" data-value="yuxi">渝西</div>
+                                </div>
+                                <div class="cascader-menu">
+                                    <!-- 区县列表将由JavaScript动态生成 -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-item">
+                        <label>时间维度：</label>
+                        <div class="time-type-group">
+                            <label class="radio-label">
+                                <input type="radio" name="timeType" value="month" checked>
+                                <span class="radio-text">月度</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="timeType" value="year">
+                                <span class="radio-text">年度</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-item" id="timePickerWrapper">
+                        <label>时间：</label>
+                        <div class="date-picker-wrapper">
+                            <input type="month" id="monthPicker" class="date-picker">
+                            <select id="yearPicker" class="date-picker" style="display: none;">
+                                <!-- 年份选项将由JavaScript动态生成 -->
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 页面内容容器 -->
+            <div class="page-container">
+                <!-- 基础画像页面 -->
+                <div class="page-content active" id="basicProfile">
+                    <!-- 图表展示区域 -->
+                    <div class="chart-container">
+                        <!-- 年龄分布柱状图 -->
+                        <div class="chart-card">
+                            <div class="chart-title">
+                                <span class="highlight">全市</span>年龄分布
+                            </div>
+                            <div id="age-bar" class="chart-box"></div>
+                        </div>
+                        
+                        <!-- 性别比例环形图 -->
+                        <div class="chart-card">
+                            <div class="chart-title">
+                                <span class="highlight">全市</span>男女分布
+                            </div>
+                            <div class="gender-content">
+                                <div id="gender-pie" class="gender-chart"></div>
+                                <div class="gender-stats">
+                                    <div class="stats-list">
+                                        <div class="stats-item">
+                                            <div class="stats-label">男性</div>
+                                            <div class="stats-value">
+                                                <span class="number">0</span>
+                                                <span class="percent">0%</span>
+                                            </div>
+                                            <div class="stats-sales">
+                                                <span class="sales-label">销量：</span>
+                                                <span class="sales-value">0万元</span>
+                                            </div>
+                                        </div>
+                                        <div class="stats-item">
+                                            <div class="stats-label">女性</div>
+                                            <div class="stats-value">
+                                                <span class="number">0</span>
+                                                <span class="percent">0%</span>
+                                            </div>
+                                            <div class="stats-sales">
+                                                <span class="sales-label">销量：</span>
+                                                <span class="sales-value">0万元</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 常住地分布地图 -->
+                        <div class="chart-card map-container">
+                            <div class="chart-title">
+                                <span class="highlight">全市</span>地域分布
+                            </div>
+                            <div class="map-content">
+                                <div id="residence-map" class="map-box"></div>
+                                <div class="table-container">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>分中心</th>
+                                                <th>人数</th>
+                                                <th>销量</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="residence-table-body">
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <td>合计</td>
+                                                <td id="total-population">0</td>
+                                                <td id="total-sales">0</td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 彩种偏好分析页面 -->
+                <div class="page-content" id="lotteryPreference">
+                    <!-- 彩种渗透率分析 -->
+                    <div class="chart-row">
+                        <div class="chart-card">
+                            <div class="chart-title">
+                                <span class="highlight">各彩种</span>用户渗透率
+                            </div>
+                            <div id="lotteryPenetration" class="chart-box"></div>
+                        </div>
+                        <div class="chart-card">
+                            <div class="chart-title">
+                                <span class="highlight">玩法</span>偏好分析
+                            </div>
+                            <div id="playMethodPreference" class="chart-box"></div>
+                        </div>
+                    </div>
+
+                    <!-- 跨彩种购买关联分析 -->
+                    <div class="chart-row">
+                        <div class="chart-card full-width">
+                            <div class="chart-title">
+                                <span class="highlight">跨彩种</span>购买关联度分析
+                            </div>
+                            <div id="crossLotteryAnalysis" class="chart-box"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 消费行为页面 -->
+                <div class="page-content" id="consumeBehavior">
+                    <div class="search-bar">
+                        <div class="search-content">
+                            <div class="form-item">
+                                <label>时间维度：</label>
+                                <div class="time-type-group">
+                                    <label class="radio-label">
+                                        <input type="radio" name="timeType" value="month" checked>
+                                        <span class="radio-text">月度</span>
+                                    </label>
+                                    <label class="radio-label">
+                                        <input type="radio" name="timeType" value="year">
+                                        <span class="radio-text">年度</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-item" id="timePickerWrapper">
+                                <label>时间：</label>
+                                <div class="date-picker-wrapper">
+                                    <input type="month" id="monthPicker" class="date-picker">
+                                    <select id="yearPicker" class="date-picker" style="display: none;">
+                                        <!-- 年份选项将由JavaScript动态生成 -->
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-item">
+                                <label>分中心：</label>
+                                <select id="area-select" class="form-select">
+                                    <option value="all">全部</option>
+                                    <option value="north">主城北</option>
+                                    <option value="south">主城南</option>
+                                    <option value="northeast">渝东北</option>
+                                    <option value="southeast">渝东南</option>
+                                    <option value="west">渝西</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 消费能力分析 -->
+                    <div class="chart-row">
+                        <div class="chart-card">
+                            <div class="chart-title">
+                                <span class="highlight">人均</span>月消费金额分布
+                            </div>
+                            <div id="monthlyConsume" class="chart-box"></div>
+                        </div>
+                        <div class="chart-card">
+                            <div class="chart-title">
+                                <span class="highlight">人均</span>年消费金额分布
+                            </div>
+                            <div id="yearlyConsume" class="chart-box"></div>
+                        </div>
+                    </div>
+
+                    <!-- 行为特征分析 -->
+                    <div class="chart-row">
+                        <div class="chart-card">
+                            <div class="chart-title">
+                                <span class="highlight">用户</span>购买频次分布
+                            </div>
+                            <div id="purchaseFrequency" class="chart-box"></div>
+                        </div>
+                        <div class="chart-card">
+                            <div class="chart-title">
+                                <span class="highlight">单次</span>平均投注额趋势
+                            </div>
+                            <div id="avgBetAmount" class="chart-box"></div>
+                        </div>
+                    </div>
+
+                    <!-- 最大单笔投注分析 -->
+                    <div class="chart-row">
+                        <div class="chart-card full-width">
+                            <div class="chart-title">
+                                <span class="highlight">最大</span>单笔投注分析
+                            </div>
+                            <div id="maxBetScatter" class="chart-box"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI助手悬浮图标和聊天框 -->
+            <div class="ai-assistant">
+                <div class="ai-icon" onclick="toggleChat()">
+                    <svg viewBox="0 0 24 24" width="24" height="24">
+                        <path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z"/>
+                    </svg>
+                </div>
+                <div class="chat-container" id="chatContainer">
+                    <div class="chat-header">
+                        <div class="chat-title">AI 助手</div>
+                        <div class="chat-close" onclick="toggleChat()">×</div>
+                    </div>
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="message assistant">
+                            <div class="message-content">
+                                您好！我是您的AI助手，有什么可以帮您的吗？
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chat-input-container">
+                        <textarea 
+                            class="chat-input" 
+                            id="chatInput" 
+                            placeholder="输入您的问题..."
+                            rows="1"
+                            onkeydown="handleKeyDown(event)"
+                        ></textarea>
+                        <button class="send-button" onclick="sendMessage()">
+                            <svg viewBox="0 0 24 24" width="20" height="20">
+                                <path fill="currentColor" d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 注册重庆地图数据
+        fetch('https://geo.datav.aliyun.com/areas_v3/bound/500000_full.json')
+            .then(response => response.json())
+            .then(data => {
+                echarts.registerMap('chongqing', data);
+                initCharts(); // 初始化所有图表
+            });
+
+        // 导航交互
+        document.querySelectorAll('.nav-item[data-page]').forEach(item => {
+            item.addEventListener('click', function() {
+                const targetPage = this.dataset.page;
+                
+                // 更新导航项状态
+                document.querySelectorAll('.nav-item[data-page]').forEach(navItem => {
+                    navItem.classList.remove('active');
+                });
+                this.classList.add('active');
+                
+                // 更新页面显示
+                document.querySelectorAll('.page-content').forEach(page => {
+                    page.classList.remove('active');
+                });
+                document.getElementById(targetPage).classList.add('active');
+                
+                // 更新面包屑
+                document.querySelector('.breadcrumb-item.active').textContent = 
+                    this.querySelector('span').textContent;
+
+                // 初始化对应页面的图表
+                if (targetPage === 'basicProfile') {
+                    initCharts();
+                } else if (targetPage === 'consumeBehavior') {
+                    initConsumeBehaviorCharts();
+                } else if (targetPage === 'lotteryPreference') {
+                    initLotteryPreferenceCharts();
+                }
+            });
+        });
+
+        // 一级导航展开/收起
+        document.querySelectorAll('.nav-group > .nav-item').forEach(item => {
+            if (item.querySelector('.arrow')) {
+                item.addEventListener('click', function() {
+                    const arrow = this.querySelector('.arrow');
+                    const subNav = this.parentElement.querySelector('.sub-nav');
+                    if (arrow.style.transform === 'rotate(-90deg)') {
+                        arrow.style.transform = 'rotate(0deg)';
+                        subNav.style.display = 'block';
+                    } else {
+                        arrow.style.transform = 'rotate(-90deg)';
+                        subNav.style.display = 'none';
+                    }
+                });
+            }
+        });
+
+        // 图表初始化
+        let charts = {
+            ageBar: null,
+            genderPie: null,
+            residenceMap: null
+        };
+
+        function initCharts() {
+            // 初始化年龄分布柱状图
+            charts.ageBar = echarts.init(document.getElementById('age-bar'));
+            const ageBarOption = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'shadow'
+                    },
+                    formatter: function(params) {
+                        let result = params[0].name + '<br/>';
+                        params.forEach(function(item) {
+                            result += item.marker + item.seriesName + '：' + item.value.toLocaleString() + 
+                                     (item.seriesName === '人数' ? '人' : '万元') + '<br/>';
+                        });
+                        return result;
+                    }
+                },
+                legend: {
+                    data: ['人数', '销量'],
+                    top: 10
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    top: '15%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    data: ['0-18', '19-24', '25-35', '36-45', '46-55', '56-65', '65+'],
+                    axisLabel: {
+                        interval: 0
+                    }
+                },
+                yAxis: [
+                    {
+                        type: 'value',
+                        name: '人数',
+                        position: 'left',
+                        axisLabel: {
+                            formatter: '{value}人'
+                        }
+                    },
+                    {
+                        type: 'value',
+                        name: '销量(万元)',
+                        position: 'right',
+                        axisLabel: {
+                            formatter: '{value}万'
+                        }
+                    }
+                ],
+                series: [
+                    {
+                        name: '人数',
+                        type: 'bar',
+                        yAxisIndex: 0,
+                        data: [5000, 15000, 35000, 25000, 12000, 5000, 3000],
+                        itemStyle: {
+                            color: '#1890ff'
+                        },
+                        label: {
+                            show: true,
+                            position: 'top',
+                            formatter: '{c}人'
+                        }
+                    },
+                    {
+                        name: '销量',
+                        type: 'line',
+                        yAxisIndex: 1,
+                        data: [120, 450, 1200, 890, 560, 230, 150],
+                        itemStyle: {
+                            color: '#ff7875'
+                        },
+                        lineStyle: {
+                            width: 3
+                        },
+                        symbol: 'circle',
+                        symbolSize: 8,
+                        label: {
+                            show: true,
+                            position: 'top',
+                            formatter: '{c}万',
+                            color: '#ff7875'
+                        }
+                    }
+                ]
+            };
+            charts.ageBar.setOption(ageBarOption);
+
+            // 初始化性别比例环形图
+            charts.genderPie = echarts.init(document.getElementById('gender-pie'));
+            const genderPieOption = {
+                tooltip: {
+                    trigger: 'item',
+                    formatter: function(params) {
+                        const data = params.data;
+                        return `${params.name}<br/>人数：${data.value.toLocaleString()}人 (${params.percent}%)<br/>销量：${data.sales.toLocaleString()}万元`;
+                    }
+                },
+                legend: {
+                    orient: 'vertical',
+                    left: 'left',
+                    top: 'center'
+                },
+                series: [{
+                    name: '性别比例',
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    center: ['60%', '50%'],
+                    avoidLabelOverlap: false,
+                    itemStyle: {
+                        borderRadius: 10,
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    },
+                    label: {
+                        show: true,
+                        formatter: '{b}: {d}%'
+                    },
+                    data: [
+                        { value: 125678, name: '男性', sales: 2850, itemStyle: { color: '#1890ff' } },
+                        { value: 95432, name: '女性', sales: 1780, itemStyle: { color: '#ff85c0' } }
+                    ]
+                }]
+            };
+            charts.genderPie.setOption(genderPieOption);
+
+            // 更新性别统计数据
+            updateGenderStats(125678, 95432, 2850, 1780); // 男性数量，女性数量，男性销量，女性销量
+
+            // 区县人口数据初始化
+            function initDistrictData() {
+                return [
+                    // 主城北
+                    { name: '江北区', value: 1050000, sales: 2850 },
+                    { name: '渝北区', value: 1620000, sales: 4200 },
+                    { name: '北碚区', value: 850000, sales: 2100 },
+                    { name: '长寿区', value: 890000, sales: 1950 },
+                    
+                    // 主城南
+                    { name: '渝中区', value: 560000, sales: 1680 },
+                    { name: '南岸区', value: 830000, sales: 2450 },
+                    { name: '九龙坡区', value: 1200000, sales: 3600 },
+                    { name: '沙坪坝区', value: 1100000, sales: 3200 },
+                    { name: '大渡口区', value: 450000, sales: 1200 },
+                    { name: '巴南区', value: 1050000, sales: 2800 },
+                    
+                    // 渝东北
+                    { name: '涪陵区', value: 920000, sales: 2300 },
+                    { name: '梁平区', value: 680000, sales: 1560 },
+                    { name: '垫江县', value: 580000, sales: 1280 },
+                    { name: '忠县', value: 540000, sales: 1150 },
+                    { name: '云阳县', value: 520000, sales: 1080 },
+                    { name: '奉节县', value: 450000, sales: 920 },
+                    { name: '巫山县', value: 420000, sales: 850 },
+                    { name: '巫溪县', value: 380000, sales: 750 },
+                    { name: '城口县', value: 250000, sales: 480 },
+                    { name: '万州区', value: 1050000, sales: 2650 },
+                    
+                    // 渝东南
+                    { name: '武隆区', value: 420000, sales: 980 },
+                    { name: '黔江区', value: 550000, sales: 1320 },
+                    { name: '石柱土家族自治县', value: 420000, sales: 890 },
+                    { name: '秀山土家族苗族自治县', value: 380000, sales: 780 },
+                    { name: '酉阳土家族苗族自治县', value: 360000, sales: 720 },
+                    { name: '彭水苗族土家族自治县', value: 420000, sales: 850 },
+                    { name: '南川区', value: 580000, sales: 1380 },
+                    
+                    // 渝西
+                    { name: '璧山区', value: 580000, sales: 1450 },
+                    { name: '大足区', value: 680000, sales: 1620 },
+                    { name: '铜梁区', value: 620000, sales: 1480 },
+                    { name: '潼南区', value: 480000, sales: 1120 },
+                    { name: '荣昌区', value: 420000, sales: 950 },
+                    { name: '合川区', value: 920000, sales: 2180 },
+                    { name: '永川区', value: 840000, sales: 2020 },
+                    { name: '綦江区', value: 720000, sales: 1680 }
+                ];
+            }
+
+            // 按片区统计数据
+            function aggregateByRegion(districtData) {
+                const regions = {
+                    '主城北': ['江北区', '渝北区', '北碚区', '长寿区'],
+                    '主城南': ['渝中区', '南岸区', '九龙坡区', '沙坪坝区', '大渡口区', '巴南区'],
+                    '渝东北': ['涪陵区', '梁平区', '垫江县', '忠县', '云阳县', '奉节县', '巫山县', '巫溪县', '城口县', '万州区'],
+                    '渝东南': ['武隆区', '黔江区', '石柱土家族自治县', '秀山土家族苗族自治县', '酉阳土家族苗族自治县', '彭水苗族土家族自治县', '南川区'],
+                    '渝西': ['璧山区', '大足区', '铜梁区', '潼南区', '荣昌区', '合川区', '永川区', '綦江区']
+                };
+
+                return Object.entries(regions).map(([region, districts]) => {
+                    const filteredData = districtData.filter(item => districts.includes(item.name));
+                    const value = filteredData.reduce((sum, item) => sum + item.value, 0);
+                    const sales = filteredData.reduce((sum, item) => sum + item.sales, 0);
+                    return { name: region, value, sales };
+                });
+            }
+
+            // 初始化区县数据
+            const districtData = initDistrictData();
+            // 按片区统计数据 - 使用指定的数据
+            const regionData = [
+                { name: '主城北', value: 4410000, sales: 11100 },
+                { name: '主城南', value: 6240000, sales: 17930 },
+                { name: '渝东北', value: 6325000, sales: 13903 },
+                { name: '渝东南', value: 3550000, sales: 7543 },
+                { name: '渝西', value: 4280000, sales: 11900 }
+            ];
+
+            // 初始化常住地分布地图
+            charts.residenceMap = echarts.init(document.getElementById('residence-map'));
+            const residenceMapOption = {
+                tooltip: {
+                    trigger: 'item',
+                    formatter: function(params) {
+                        if (params.value) {
+                            const population = params.value.toLocaleString();
+                            const salesData = districtData.find(item => item.name === params.name);
+                            const sales = salesData ? salesData.sales.toLocaleString() : '暂无数据';
+                            return `${params.name}<br/>常住人口：${population}人<br/>销量：${sales}万元`;
+                        }
+                        return `${params.name}<br/>暂无数据`;
+                    }
+                },
+                visualMap: {
+                    left: 'left',
+                    min: 200000,
+                    max: 2000000,
+                    text: ['高', '低'],
+                    calculable: true,
+                    inRange: {
+                        color: ['#e0f3f8', '#1890ff']
+                    }
+                },
+                series: [{
+                    name: '常住人口',
+                    type: 'map',
+                    map: 'chongqing',
+                    roam: true,
+                    emphasis: {
+                        label: {
+                            show: true
+                        }
+                    },
+                    data: districtData,
+                    label: {
+                        show: false
+                    }
+                }]
+            };
+            charts.residenceMap.setOption(residenceMapOption);
+
+            // 更新表格数据
+            updateResidenceTable(regionData);
+        }
+
+        // 更新性别统计数据
+        function updateGenderStats(maleCount, femaleCount, maleSales, femaleSales) {
+            const total = maleCount + femaleCount;
+            const totalSales = maleSales + femaleSales;
+            const malePercent = ((maleCount / total) * 100).toFixed(1);
+            const femalePercent = ((femaleCount / total) * 100).toFixed(1);
+            
+            // 更新统计数据
+            const statsItems = document.querySelectorAll('.stats-item');
+            
+            // 更新男性数据
+            statsItems[0].querySelector('.number').textContent = maleCount.toLocaleString();
+            statsItems[0].querySelector('.percent').textContent = malePercent + '%';
+            statsItems[0].querySelector('.sales-value').textContent = maleSales.toLocaleString() + '万元';
+            
+            // 更新女性数据
+            statsItems[1].querySelector('.number').textContent = femaleCount.toLocaleString();
+            statsItems[1].querySelector('.percent').textContent = femalePercent + '%';
+            statsItems[1].querySelector('.sales-value').textContent = femaleSales.toLocaleString() + '万元';
+
+            // 更新饼图数据
+            const genderPieOption = {
+                tooltip: {
+                    trigger: 'item',
+                    formatter: function(params) {
+                        const data = params.data;
+                        return `${params.name}<br/>人数：${data.value.toLocaleString()}人 (${params.percent}%)<br/>销量：${data.sales.toLocaleString()}万元`;
+                    }
+                },
+                legend: {
+                    show: false
+                },
+                series: [{
+                    name: '性别比例',
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    center: ['50%', '50%'],
+                    avoidLabelOverlap: false,
+                    itemStyle: {
+                        borderRadius: 10,
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    },
+                    label: {
+                        show: true,
+                        formatter: '{b}\n{d}%',
+                        fontSize: 14
+                    },
+                    data: [
+                        { value: maleCount, name: '男性', sales: maleSales, itemStyle: { color: '#1890ff' } },
+                        { value: femaleCount, name: '女性', sales: femaleSales, itemStyle: { color: '#ff85c0' } }
+                    ]
+                }]
+            };
+            charts.genderPie.setOption(genderPieOption);
+        }
+
+        // 更新表格数据
+        function updateResidenceTable(data) {
+            const tableBody = document.getElementById('residence-table-body');
+            const totalPopulationCell = document.getElementById('total-population');
+            const totalSalesCell = document.getElementById('total-sales');
+            let totalPopulation = 0;
+            let totalSales = 0;
+
+            // 先计算总数用于占比计算
+            data.forEach(item => {
+                totalPopulation += item.value;
+                totalSales += item.sales;
+            });
+
+            // 清空现有数据
+            tableBody.innerHTML = '';
+
+            // 添加新数据
+            data.forEach(item => {
+                const percentage = ((item.value / totalPopulation) * 100).toFixed(1);
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.name}</td>
+                    <td>${item.value.toLocaleString()}</td>
+                    <td>${percentage}%</td>
+                    <td>${item.sales.toLocaleString()}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            // 更新合计
+            totalPopulationCell.textContent = totalPopulation.toLocaleString();
+            totalSalesCell.textContent = totalSales.toLocaleString();
+        }
+
+        // 更新图表数据
+        function updateCharts() {
+            const area = document.getElementById('area-select').value;
+            const currentPage = document.querySelector('.page-content.active').id;
+            let timeType, timeValue;
+
+            // 根据当前页面决定如何获取时间值
+            if (currentPage === 'consumeBehavior') {
+                // 消费行为页面只使用月份
+                timeValue = document.getElementById('monthPicker').value;
+            } else {
+                // 其他页面使用时间维度
+                timeType = document.querySelector('input[name="timeType"]:checked').value;
+                timeValue = timeType === 'month' 
+                    ? document.getElementById('monthPicker').value
+                    : document.getElementById('yearPicker').value;
+            }
+            
+            console.log('更新图表:', { area, timeType, timeValue, page: currentPage });
+            // 这里可以添加实际的数据更新逻辑
+        }
+
+        // 监听窗口大小变化，调整图表大小
+        window.addEventListener('resize', function() {
+            Object.values(charts).forEach(chart => chart && chart.resize());
+        });
+
+        // 区域数据
+        const areaData = {
+            'zhuchengnan': {
+                name: '主城南',
+                districts: ['渝中区', '江北区', '南岸区', '九龙坡区', '沙坪坝区', '大渡口区']
+            },
+            'zhuchengbei': {
+                name: '主城北',
+                districts: ['北碚区', '渝北区', '巴南区', '两江新区']
+            },
+            'yudongnan': {
+                name: '渝东南',
+                districts: ['黔江区', '武隆区', '彭水县', '酉阳县', '秀山县']
+            },
+            'yudongbei': {
+                name: '渝东北',
+                districts: ['万州区', '开州区', '云阳县', '奉节县', '巫山县', '巫溪县']
+            },
+            'yuxi': {
+                name: '渝西',
+                districts: ['江津区', '合川区', '永川区', '綦江区', '大足区', '铜梁区']
+            }
+        };
+
+        let selectedArea = {
+            level1: '重庆市',
+            level2: '',
+            level3: ''
+        };
+
+        // 显示/隐藏级联选择器
+        function toggleCascader() {
+            const dropdown = document.getElementById('cascader-dropdown');
+            const arrow = document.querySelector('.arrow-down');
+            dropdown.classList.toggle('show');
+            arrow.classList.toggle('open');
+        }
+
+        // 点击其他区域关闭级联选择器
+        document.addEventListener('click', function(e) {
+            const cascader = document.querySelector('.cascader-wrapper');
+            if (!cascader.contains(e.target)) {
+                document.getElementById('cascader-dropdown').classList.remove('show');
+                document.querySelector('.arrow-down').classList.remove('open');
+            }
+        });
+
+        // 初始化级联选择器事件
+        document.querySelectorAll('.cascader-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const value = this.getAttribute('data-value');
+                const menu = this.parentElement;
+                const menuIndex = Array.from(menu.parentElement.children).indexOf(menu);
+
+                // 移除同级所有选中状态
+                menu.querySelectorAll('.cascader-item').forEach(i => i.classList.remove('selected'));
+                this.classList.add('selected');
+
+                if (menuIndex === 0) {
+                    // 点击第一级（重庆市）
+                    selectedArea = {
+                        level1: '重庆市',
+                        level2: '',
+                        level3: ''
+                    };
+                    updateSelectedText();
+                } else if (menuIndex === 1) {
+                    // 点击第二级（分中心）
+                    selectedArea.level2 = areaData[value].name;
+                    selectedArea.level3 = '';
+                    updateSelectedText();
+                    updateDistrictMenu(value);
+                } else {
+                    // 点击第三级（区县）
+                    selectedArea.level3 = this.textContent;
+                    updateSelectedText();
+                    toggleCascader();
+                    // 触发查询
+                    updateCharts();
+                }
+            });
+        });
+
+        // 更新区县菜单
+        function updateDistrictMenu(areaCode) {
+            const districtMenu = document.querySelector('.cascader-menu:last-child');
+            districtMenu.innerHTML = '';
+            
+            areaData[areaCode].districts.forEach(district => {
+                const item = document.createElement('div');
+                item.className = 'cascader-item';
+                item.textContent = district;
+                item.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    districtMenu.querySelectorAll('.cascader-item').forEach(i => i.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedArea.level3 = this.textContent;
+                    updateSelectedText();
+                    toggleCascader();
+                    // 触发查询
+                    updateCharts();
+                });
+                districtMenu.appendChild(item);
+            });
+        }
+
+        // 更新选中文本显示
+        function updateSelectedText() {
+            const text = [selectedArea.level1];
+            if (selectedArea.level2) text.push(selectedArea.level2);
+            if (selectedArea.level3) text.push(selectedArea.level3);
+            document.getElementById('selected-area').textContent = text.join(' / ');
+        }
+
+        // 更新图表
+        function updateCharts() {
+            // 获取选中的区域和时间类型
+            const timeType = document.querySelector('input[name="timeType"]:checked').value;
+            
+            // 更新所有图表
+            // ... 更新图表的逻辑 ...
+        }
+
+        // 重置按钮事件
+        document.querySelector('.reset-btn').addEventListener('click', function() {
+            selectedArea = {
+                level1: '重庆市',
+                level2: '',
+                level3: ''
+            };
+            updateSelectedText();
+            
+            // 重置选中状态
+            document.querySelectorAll('.cascader-item').forEach(item => item.classList.remove('selected'));
+            document.querySelector('.cascader-menu:first-child .cascader-item').classList.add('selected');
+            
+            // 重置时间类型
+            document.querySelector('input[name="timeType"][value="month"]').checked = true;
+            
+            // 更新图表
+            updateCharts();
+        });
+
+        // 查询按钮事件
+        document.querySelector('.search-btn').addEventListener('click', function() {
+            updateCharts();
+        });
+
+        // AI助手相关功能
+        function toggleChat() {
+            const chatContainer = document.getElementById('chatContainer');
+            chatContainer.classList.toggle('show');
+            if (chatContainer.classList.contains('show')) {
+                document.getElementById('chatInput').focus();
+            }
+        }
+
+        function handleKeyDown(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if (!message) return;
+
+            // 添加用户消息
+            addMessage(message, 'user');
+            input.value = '';
+            adjustTextareaHeight(input);
+
+            // 模拟AI响应
+            setTimeout(() => {
+                addMessage('我理解您的问题，让我为您分析...', 'assistant');
+            }, 500);
+        }
+
+        function addMessage(content, type) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.innerHTML = `
+                <div class="message-content">${content}</div>
+            `;
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function adjustTextareaHeight(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+        }
+
+        // 监听输入框内容变化
+        document.getElementById('chatInput').addEventListener('input', function() {
+            adjustTextareaHeight(this);
+        });
+
+        // 初始化消费行为图表
+        function initConsumeBehaviorCharts() {
+            // 月消费金额分布
+            const monthlyConsume = echarts.init(document.getElementById('monthlyConsume'));
+            const monthlyConsumeOption = {
+                tooltip: {
+                    trigger: 'axis',
+                    formatter: '{b}: {c}人 ({d}%)'
+                },
+                xAxis: {
+                    type: 'category',
+                    data: ['<50元', '50-100元', '100-200元', '200-500元', '>500元']
+                },
+                yAxis: {
+                    type: 'value',
+                    name: '人数'
+                },
+                series: [{
+                    data: [1200, 2300, 1800, 730, 250],
+                    type: 'bar',
+                    itemStyle: {
+                        color: '#1890ff'
+                    },
+                    label: {
+                        show: true,
+                        position: 'top'
+                    }
+                }]
+            };
+            monthlyConsume.setOption(monthlyConsumeOption);
+
+            // 年消费金额分布
+            const yearlyConsume = echarts.init(document.getElementById('yearlyConsume'));
+            const yearlyConsumeOption = {
+                tooltip: {
+                    trigger: 'axis',
+                    formatter: '{b}: {c}人 ({d}%)'
+                },
+                xAxis: {
+                    type: 'category',
+                    data: ['<500元', '500-1000元', '1000-2000元', '2000-5000元', '>5000元']
+                },
+                yAxis: {
+                    type: 'value',
+                    name: '人数'
+                },
+                series: [{
+                    data: [800, 1500, 2100, 1200, 400],
+                    type: 'bar',
+                    itemStyle: {
+                        color: '#1890ff'
+                    },
+                    label: {
+                        show: true,
+                        position: 'top'
+                    }
+                }]
+            };
+            yearlyConsume.setOption(yearlyConsumeOption);
+
+            // 购买频次分布
+            const purchaseFrequency = echarts.init(document.getElementById('purchaseFrequency'));
+            const purchaseFrequencyOption = {
+                tooltip: {
+                    trigger: 'axis'
+                },
+                xAxis: {
+                    type: 'category',
+                    data: ['每周1次以下', '每周1-2次', '每周3-5次', '每周5次以上']
+                },
+                yAxis: {
+                    type: 'value',
+                    name: '人数'
+                },
+                series: [{
+                    data: [3000, 2500, 1500, 500],
+                    type: 'line',
+                    smooth: true,
+                    itemStyle: {
+                        color: '#1890ff'
+                    },
+                    areaStyle: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                            offset: 0,
+                            color: 'rgba(24,144,255,0.3)'
+                        }, {
+                            offset: 1,
+                            color: 'rgba(24,144,255,0.1)'
+                        }])
+                    }
+                }]
+            };
+            purchaseFrequency.setOption(purchaseFrequencyOption);
+
+            // 单次平均投注额趋势图
+            const avgBetAmount = echarts.init(document.getElementById('avgBetAmount'));
+            const avgBetAmountOption = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'cross'
+                    },
+                    formatter: function(params) {
+                        return `${params[0].name}<br/>${params[0].marker}投注金额：${params[0].value}元`;
+                    }
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    name: '日期',
+                    data: [
+                        '03-08',
+                        '03-09',
+                        '03-10',
+                        '03-11',
+                        '03-12',
+                        '03-13',
+                        '03-14'
+                    ],
+                    axisLabel: {
+                        interval: 0
+                    }
+                },
+                yAxis: {
+                    type: 'value',
+                    name: '投注金额（元）',
+                    axisLabel: {
+                        formatter: '{value}元'
+                    }
+                },
+                series: [{
+                    name: '平均投注金额',
+                    type: 'line',
+                    data: [152, 160, 148, 138, 165, 142, 156],
+                    symbolSize: 8,
+                    itemStyle: {
+                        color: '#1890ff'
+                    },
+                    lineStyle: {
+                        width: 3
+                    },
+                    label: {
+                        show: true,
+                        position: 'top',
+                        formatter: '{c}元'
+                    },
+                    smooth: true,
+                    areaStyle: {
+                        opacity: 0.1
+                    }
+                }]
+            };
+            avgBetAmount.setOption(avgBetAmountOption);
+
+            // 最大单笔投注散点图
+            const maxBetScatter = echarts.init(document.getElementById('maxBetScatter'));
+            const maxBetScatterOption = {
+                tooltip: {
+                    trigger: 'item',
+                    formatter: function(params) {
+                        return `日期：${params.data[0]}<br/>金额：${params.data[1]}元`;
+                    }
+                },
+                xAxis: {
+                    type: 'time',
+                    name: '日期'
+                },
+                yAxis: {
+                    type: 'value',
+                    name: '投注金额'
+                },
+                series: [{
+                    type: 'scatter',
+                    data: generateScatterData(),
+                    symbolSize: function(data) {
+                        return Math.sqrt(data[1]) / 10;
+                    },
+                    itemStyle: {
+                        color: '#1890ff'
+                    }
+                }]
+            };
+            maxBetScatter.setOption(maxBetScatterOption);
+        }
+
+        // 生成散点图数据
+        function generateScatterData() {
+            const data = [];
+            const baseTime = new Date('2024-01-01').getTime();
+            for (let i = 0; i < 100; i++) {
+                data.push([
+                    new Date(baseTime + Math.random() * 30 * 24 * 3600 * 1000),
+                    Math.round(Math.random() * 10000)
+                ]);
+            }
+            return data;
+        }
+
+        // 初始化时间选择器
+        function initTimePicker() {
+            const monthPicker = document.getElementById('monthPicker');
+            const yearPicker = document.getElementById('yearPicker');
+            
+            // 设置月份选择器的默认值为当前月份
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            const currentMonth = (now.getMonth() + 1).toString().padStart(2, '0');
+            monthPicker.value = `${currentYear}-${currentMonth}`;
+            
+            // 生成年份选项（前10年到当前年份）
+            for (let year = currentYear; year >= currentYear - 10; year--) {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year + '年';
+                yearPicker.appendChild(option);
+            }
+            yearPicker.value = currentYear;
+            
+            // 根据时间维度显示对应的选择器
+            const timeTypeRadios = document.querySelectorAll('input[name="timeType"]');
+            timeTypeRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    // 获取当前页面ID
+                    const currentPage = document.querySelector('.page-content.active').id;
+                    
+                    // 如果是消费行为页面，不执行时间维度切换
+                    if (currentPage === 'consumeBehavior') {
+                        return;
+                    }
+                    
+                    if (this.value === 'month') {
+                        monthPicker.style.display = 'block';
+                        yearPicker.style.display = 'none';
+                    } else {
+                        monthPicker.style.display = 'none';
+                        yearPicker.style.display = 'block';
+                    }
+                    updateCharts();
+                });
+            });
+            
+            // 添加时间选择器变化事件
+            monthPicker.addEventListener('change', updateCharts);
+            yearPicker.addEventListener('change', updateCharts);
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initTimePicker();
+        });
+
+        // 初始化彩种偏好分析图表
+        function initLotteryPreferenceCharts() {
+            // 各彩种用户渗透率柱状图
+            const lotteryPenetration = echarts.init(document.getElementById('lotteryPenetration'));
+            const lotteryPenetrationOption = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'shadow'
+                    },
+                    formatter: '{b}: {c}%'
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    data: ['双色球', '快乐8', '3D'],
+                    axisLabel: {
+                        interval: 0
+                    }
+                },
+                yAxis: {
+                    type: 'value',
+                    name: '渗透率',
+                    axisLabel: {
+                        formatter: '{value}%'
+                    }
+                },
+                series: [{
+                    name: '渗透率',
+                    type: 'bar',
+                    data: [65, 45, 35],
+                    itemStyle: {
+                        color: function(params) {
+                            const colors = ['#1890ff', '#13c2c2', '#52c41a'];
+                            return colors[params.dataIndex];
+                        }
+                    },
+                    label: {
+                        show: true,
+                        position: 'top',
+                        formatter: '{c}%'
+                    }
+                }]
+            };
+            lotteryPenetration.setOption(lotteryPenetrationOption);
+
+            // 玩法偏好雷达图
+            const playMethodPreference = echarts.init(document.getElementById('playMethodPreference'));
+            const playMethodPreferenceOption = {
+                tooltip: {
+                    trigger: 'item'
+                },
+                radar: {
+                    indicator: [
+                        { name: '单式', max: 100 },
+                        { name: '复式', max: 100 },
+                        { name: '胆拖', max: 100 }
+                    ],
+                    center: ['50%', '50%'],
+                    radius: '65%'
+                },
+                series: [{
+                    name: '玩法偏好',
+                    type: 'radar',
+                    data: [
+                        {
+                            value: [80, 60, 40],
+                            name: '双色球',
+                            itemStyle: { color: '#1890ff' },
+                            areaStyle: {
+                                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                    { offset: 0, color: 'rgba(24,144,255,0.3)' },
+                                    { offset: 1, color: 'rgba(24,144,255,0.1)' }
+                                ])
+                            }
+                        },
+                        {
+                            value: [70, 50, 30],
+                            name: '快乐8',
+                            itemStyle: { color: '#13c2c2' },
+                            areaStyle: {
+                                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                    { offset: 0, color: 'rgba(19,194,194,0.3)' },
+                                    { offset: 1, color: 'rgba(19,194,194,0.1)' }
+                                ])
+                            }
+                        },
+                        {
+                            value: [60, 45, 35],
+                            name: '3D',
+                            itemStyle: { color: '#52c41a' },
+                            areaStyle: {
+                                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                    { offset: 0, color: 'rgba(82,196,26,0.3)' },
+                                    { offset: 1, color: 'rgba(82,196,26,0.1)' }
+                                ])
+                            }
+                        }
+                    ]
+                }]
+            };
+            playMethodPreference.setOption(playMethodPreferenceOption);
+
+            // 跨彩种购买关联度桑基图
+            const crossLotteryAnalysis = echarts.init(document.getElementById('crossLotteryAnalysis'));
+            const crossLotteryAnalysisOption = {
+                tooltip: {
+                    trigger: 'item',
+                    triggerOn: 'mousemove'
+                },
+                series: {
+                    type: 'sankey',
+                    layout: 'none',
+                    emphasis: {
+                        focus: 'adjacency'
+                    },
+                    data: [
+                        { name: '双色球' },
+                        { name: '快乐8' },
+                        { name: '3D' },
+                        { name: '双色球+快乐8' },
+                        { name: '双色球+3D' },
+                        { name: '快乐8+3D' },
+                        { name: '三彩种' }
+                    ],
+                    links: [
+                        { source: '双色球', target: '双色球+快乐8', value: 3000 },
+                        { source: '快乐8', target: '双色球+快乐8', value: 3000 },
+                        { source: '双色球', target: '双色球+3D', value: 2500 },
+                        { source: '3D', target: '双色球+3D', value: 2500 },
+                        { source: '快乐8', target: '快乐8+3D', value: 2000 },
+                        { source: '3D', target: '快乐8+3D', value: 2000 },
+                        { source: '双色球+快乐8', target: '三彩种', value: 1500 },
+                        { source: '双色球+3D', target: '三彩种', value: 1500 },
+                        { source: '快乐8+3D', target: '三彩种', value: 1500 }
+                    ]
+                }
+            };
+            crossLotteryAnalysis.setOption(crossLotteryAnalysisOption);
+        }
+    </script>
+</body>
+</html>
