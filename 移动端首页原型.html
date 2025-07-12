@@ -1,0 +1,2390 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>移动端首页原型</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: #f5f5f5;
+            line-height: 1.6;
+            max-width: 430px;
+            margin: 0 auto;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* 导航头 */
+        .mobile-nav-header {
+            background: linear-gradient(135deg, #1890ff 0%, #40a9ff 100%);
+            color: white;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            max-width: 430px;
+            margin: 0 auto;
+            border-radius: 0 0 12px 12px; /* 底部圆角与内容区域协调 */
+        }
+
+        .nav-left {
+            flex: 1;
+        }
+
+        .hamburger-menu {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            padding: 4px 8px;
+            border-radius: 8px;
+        }
+
+        .hamburger-menu:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .hamburger-menu i {
+            font-size: 18px;
+            margin-right: 8px;
+        }
+
+        .menu-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .menu-title {
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        .menu-subtitle {
+            font-size: 12px;
+            opacity: 0.8;
+            line-height: 1.2;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .nav-icon:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .nav-icon i {
+            font-size: 16px;
+        }
+
+        .badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: #ff4d4f;
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            min-width: 16px;
+            text-align: center;
+        }
+
+        /* 展开选择器 */
+        .expand-selector {
+            position: fixed;
+            top: 0; /* 从页面最顶部开始，遮住导航头 */
+            left: 0;
+            width: 100%;
+            height: 100%; /* 覆盖整个页面 */
+            background: transparent; /* 去掉遮罩效果 */
+            z-index: 1000; /* 高于所有组件，确保遮住导航头 */
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .expand-selector.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .expand-selector-content {
+            position: absolute;
+            top: 0; /* 与页面顶部完全平齐 */
+            left: 50%;
+            transform: translateX(-50%) translateY(-100%); /* 初始状态向上隐藏 */
+            background: white;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+            min-width: 300px;
+            max-width: 430px; /* 与首页内容宽度一致 */
+            width: calc(100% - 32px); /* 响应式宽度 */
+            overflow: hidden;
+            z-index: 102; /* 确保在遮罩层之上 */
+        }
+
+        .expand-selector.active .expand-selector-content {
+            transform: translateX(-50%) translateY(0); /* 显示时与顶部完全平齐 */
+        }
+
+        .expand-selector-header {
+            background: linear-gradient(135deg, #1890ff 0%, #40a9ff 100%);
+            color: white;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .expand-selector-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .expand-selector-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
+        .expand-selector-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .expand-selector-body {
+            padding: 20px;
+            max-height: calc(100vh - 120px); /* 减去头部高度，适应整个屏幕 */
+            overflow-y: auto;
+        }
+
+        .selector-section {
+            margin-bottom: 24px;
+        }
+
+        .selector-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #262626;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-title i {
+            margin-right: 8px;
+            color: #1890ff;
+        }
+
+        .selector-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .selector-item {
+            padding: 8px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .selector-item:hover {
+            border-color: #1890ff;
+            background: #f0f8ff;
+        }
+
+        .selector-item.active {
+            border-color: #1890ff;
+            background: #e6f7ff;
+            color: #1890ff;
+            font-weight: 600;
+        }
+
+        .selector-dropdown {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 6px;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .selector-dropdown:focus {
+            outline: none;
+            border-color: #1890ff;
+            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+        }
+
+        .date-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .date-input:focus {
+            outline: none;
+            border-color: #1890ff;
+            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+        }
+
+        .selector-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .selector-actions button {
+            flex: 1;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-cancel {
+            background: #f5f5f5;
+            color: #595959;
+        }
+
+        .btn-cancel:hover {
+            background: #e6f7ff;
+            color: #1890ff;
+        }
+
+        .btn-confirm {
+            background: #1890ff;
+            color: white;
+        }
+
+        .btn-confirm:hover {
+            background: #40a9ff;
+        }
+
+        /* 主要内容区域 */
+        .homepage-content {
+            padding: 16px;
+            max-width: 430px;
+            margin: 0 auto;
+            border: 1px solid #e8e8e8; /* 浅色边框 */
+            border-radius: 12px; /* 圆角边框 */
+            background: #fafafa; /* 浅色背景 */
+            margin-top: 6px; /* 与导航头的间距减少到3/4 */
+        }
+
+        /* 通用卡片样式 */
+        .mobile-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 16px 8px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+            font-weight: 600;
+            color: #262626;
+        }
+
+        .card-title i {
+            margin-right: 8px;
+            font-size: 18px;
+        }
+
+        .card-content {
+            padding: 16px;
+        }
+
+        /* 快捷功能面板 */
+        .quick-actions {
+            margin-top: 9px;
+        }
+
+        .quick-actions-container {
+            position: relative;
+            overflow: hidden;
+            padding: 8px 16px;
+        }
+
+        .quick-actions-content {
+            display: flex;
+            gap: 16px;
+            width: fit-content;
+            transition: transform 0.3s ease;
+        }
+
+        .quick-actions-row {
+            display: flex;
+            gap: 16px;
+            min-width: 0;
+        }
+
+        .quick-action-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            padding: 4px 2px;
+            border-radius: 8px;
+            flex: 0 0 auto;
+            min-width: 80px; /* 固定最小宽度 */
+            width: 80px;
+        }
+
+        .quick-action-item:hover {
+            background: #f5f5f5;
+            transform: translateY(-2px);
+        }
+
+        .action-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        .action-label {
+            font-size: 10px;
+            color: #595959;
+            font-weight: 500;
+            line-height: 1.4;
+            margin-top: 4px;
+            text-align: center;
+            display: block; /* 显示标签 */
+        }
+
+        .manage-icon {
+            border: 2px dashed #d9d9d9;
+            background: #f5f5f5;
+            color: #8c8c8c;
+        }
+
+        /* 滑动指示器 */
+        .quick-actions-indicator {
+            display: flex;
+            justify-content: center;
+            margin-top: 4px;
+            padding-bottom: 4px;
+        }
+
+        .scroll-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .indicator-dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #d9d9d9;
+            transition: all 0.3s ease;
+        }
+
+        .dot.active {
+            background: #1890ff;
+        }
+
+        /* 热门玩法网格布局 */
+        .popular-games-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            gap: 3px;
+            height: 200px;
+            width: 100%;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 3px;
+        }
+
+        .game-tile {
+            border-radius: 6px;
+            padding: 8px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-tile:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 大块 - 占用2x2 */
+        .game-tile.large {
+            grid-column: span 2;
+            grid-row: span 2;
+        }
+
+        /* 中等块 - 占用2x1 */
+        .game-tile.medium {
+            grid-column: span 2;
+            grid-row: span 1;
+        }
+
+        /* 长条块 - 占用3x1 */
+        .game-tile.wide {
+            grid-column: span 3;
+            grid-row: span 1;
+        }
+
+        /* 小块 - 占用1x1 */
+        .game-tile.small {
+            grid-column: span 1;
+            grid-row: span 1;
+        }
+
+        .tile-title {
+            font-weight: bold;
+            margin-bottom: 2px;
+            font-size: 11px;
+            line-height: 1.2;
+        }
+
+        .tile-subtitle {
+            font-size: 9px;
+            opacity: 0.8;
+            line-height: 1.1;
+        }
+
+        /* 大块中的文字 */
+        .game-tile.large .tile-title {
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .game-tile.large .tile-subtitle {
+            font-size: 11px;
+        }
+
+        /* 中等块中的文字 */
+        .game-tile.medium .tile-title {
+            font-size: 12px;
+        }
+
+        .game-tile.medium .tile-subtitle {
+            font-size: 10px;
+        }
+
+        /* 长条块中的文字 */
+        .game-tile.wide .tile-title {
+            font-size: 12px;
+        }
+
+        .game-tile.wide .tile-subtitle {
+            font-size: 10px;
+        }
+
+        /* 小块中的文字 */
+        .game-tile.small .tile-title {
+            font-size: 9px;
+        }
+
+        .game-tile.small .tile-subtitle {
+            font-size: 8px;
+        }
+
+        /* 告警横幅 */
+        .alert-banner {
+            background: linear-gradient(135deg, #ff4d4f 0%, #ff7875 100%);
+            border-radius: 8px;
+            padding: 8px 16px; /* 减少内边距 */
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+        }
+
+        .alert-banner:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(255, 77, 79, 0.3);
+        }
+
+        .alert-content {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+
+        .alert-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-size: 14px;
+        }
+
+        .alert-text {
+            flex: 1;
+        }
+
+        .alert-message {
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        .alert-description {
+            font-size: 11px;
+            opacity: 0.8;
+            line-height: 1.4;
+        }
+
+        /* KPI指标卡片 */
+        .kpi-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .kpi-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px; /* 恢复内边距保持视觉效果 */
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #1890ff, #52c41a);
+        }
+
+        .kpi-title {
+            font-size: 12px;
+            color: #8c8c8c;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .kpi-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #262626;
+            margin-bottom: 4px;
+        }
+
+        .kpi-trend {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .trend-indicator {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .trend-indicator.up {
+            color: #52c41a;
+        }
+
+        .trend-indicator.down {
+            color: #ff4d4f;
+        }
+
+        .trend-description {
+            font-size: 10px;
+            color: #8c8c8c;
+        }
+
+        /* 图表容器 */
+        .chart-container {
+            height: 200px;
+            position: relative;
+            margin: 16px 0;
+        }
+
+        .chart-canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* 统计列表 */
+        .stats-list {
+            margin-top: 16px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #595959;
+        }
+
+        .stat-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #262626;
+        }
+
+        /* 排行榜 */
+        .ranking-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+        }
+
+        .ranking-table th,
+        .ranking-table td {
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .ranking-table th {
+            background: #fafafa;
+            font-size: 11px;
+            font-weight: 600;
+            color: #595959;
+        }
+
+        .ranking-table td {
+            font-size: 12px;
+        }
+
+        .rank-cell {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .rank-icon {
+            font-size: 14px;
+        }
+
+        .rank-1 { color: #ffd700; }
+        .rank-2 { color: #c0c0c0; }
+        .rank-3 { color: #cd7f32; }
+
+        .station-id {
+            font-family: monospace;
+            font-size: 11px;
+            font-weight: 600;
+            color: #1890ff;
+        }
+
+        .sales-amount {
+            font-weight: 600;
+            color: #52c41a;
+        }
+
+        /* 模态框 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 360px;
+            max-height: 80vh;
+            overflow-y: auto;
+            transform: scale(0.9);
+            transition: transform 0.3s;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            padding: 16px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #262626;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            color: #8c8c8c;
+        }
+
+        .modal-body {
+            padding: 16px;
+        }
+
+        /* 按钮样式 */
+        .btn {
+            border: none;
+            border-radius: 6px;
+            padding: 8px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #1890ff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #40a9ff;
+        }
+
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #595959;
+        }
+
+        .btn-secondary:hover {
+            background: #e6f7ff;
+            color: #1890ff;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 375px) {
+            body {
+                max-width: 375px;
+            }
+            
+            .homepage-content {
+                padding: 0 12px;
+            }
+            
+            .mobile-nav-header {
+                padding: 10px 12px;
+            }
+            
+            .menu-title {
+                font-size: 14px;
+            }
+            
+            .menu-subtitle {
+                font-size: 11px;
+            }
+            
+            .nav-icon {
+                width: 32px;
+                height: 32px;
+            }
+            
+            .quick-actions-grid {
+                gap: 12px;
+                padding: 12px;
+            }
+            
+            .action-icon {
+                width: 44px;
+                height: 44px;
+                font-size: 18px;
+            }
+            
+            .action-label {
+                font-size: 11px;
+            }
+            
+            /* 展开选择器响应式 */
+            .expand-selector {
+                top: 58px; /* 小屏幕上导航头较小 */
+                height: calc(100% - 58px); /* 对应调整高度 */
+            }
+            
+            .expand-selector-content {
+                top: 0; /* 相对于遮罩层顶部 */
+                left: 50%; /* 保持居中 */
+                min-width: 260px;
+                max-width: 375px; /* 小屏幕最大宽度 */
+                width: calc(100% - 24px); /* 小屏幕边距调整 */
+            }
+            
+            .expand-selector-body {
+                padding: 16px;
+            }
+            
+            .selector-grid {
+                grid-template-columns: 1fr;
+                gap: 6px;
+            }
+            
+            .section-title {
+                font-size: 13px;
+            }
+            
+            .selector-item {
+                padding: 10px 12px;
+                font-size: 13px;
+            }
+            
+            .selector-dropdown,
+            .date-input {
+                font-size: 13px;
+            }
+        }
+
+        /* 动画效果 */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .mobile-card {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .alert-icon {
+            animation: pulse 2s infinite;
+        }
+
+        /* 展开选择器进入动画 */
+        @keyframes expandIn {
+            from {
+                transform: translateX(-50%) scale(0);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(-50%) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .expand-selector.active .expand-selector-content {
+            animation: expandIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+        }
+
+        /* 加载状态 */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100px;
+            color: #8c8c8c;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #1890ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航头 -->
+    <header class="mobile-nav-header">
+        <div class="nav-left">
+            <div class="hamburger-menu" onclick="openExpandSelector()">
+                <i class="fas fa-bars"></i>
+                <div class="menu-info">
+                    <div class="menu-title">区域销售一部 · 今天</div>
+                    <div class="menu-subtitle">北京市 · 朝阳区 · 2024-12-20</div>
+                </div>
+                <i class="fas fa-chevron-down" style="font-size: 12px; margin-left: 4px;"></i>
+            </div>
+        </div>
+        <div class="nav-right">
+            <div class="nav-icon" onclick="openScanModal()">
+                <i class="fas fa-qrcode"></i>
+            </div>
+            <div class="nav-icon" onclick="openMessageModal()">
+                <i class="fas fa-bell"></i>
+                <span class="badge">5</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主要内容 -->
+    <div class="homepage-content">
+        <!-- 快捷功能面板 -->
+        <div class="quick-actions mobile-card">
+            <div class="quick-actions-container" id="quickActionsContainer">
+                <div class="quick-actions-content" id="quickActionsContent">
+                    <div class="quick-action-item" onclick="showToast('网点档案')">
+                        <div class="action-icon" style="background: #1890ff;">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        <div class="action-label">网点档案</div>
+                    </div>
+                    <div class="quick-action-item" onclick="showToast('网点停开机')">
+                        <div class="action-icon" style="background: #52c41a;">
+                            <i class="fas fa-power-off"></i>
+                        </div>
+                        <div class="action-label">网点停开机</div>
+                    </div>
+                    <div class="quick-action-item" onclick="showToast('证书重置')">
+                        <div class="action-icon" style="background: #faad14;">
+                            <i class="fas fa-certificate"></i>
+                        </div>
+                        <div class="action-label">证书重置</div>
+                    </div>
+                    <div class="quick-action-item" onclick="showToast('资料变更')">
+                        <div class="action-icon" style="background: #f5222d;">
+                            <i class="fas fa-edit"></i>
+                        </div>
+                        <div class="action-label">资料变更</div>
+                    </div>
+                    <div class="quick-action-item" onclick="showToast('合同签署')">
+                        <div class="action-icon" style="background: #722ed1;">
+                            <i class="fas fa-file-contract"></i>
+                        </div>
+                        <div class="action-label">合同签署</div>
+                    </div>
+                    <div class="quick-action-item" onclick="showToast('用户管理')">
+                        <div class="action-icon" style="background: #13c2c2;">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="action-label">用户管理</div>
+                    </div>
+                    <div class="quick-action-item" onclick="showToast('系统配置')">
+                        <div class="action-icon" style="background: #eb2f96;">
+                            <i class="fas fa-cogs"></i>
+                        </div>
+                        <div class="action-label">系统配置</div>
+                    </div>
+                    <div class="quick-action-item" onclick="showToast('票据管理')">
+                        <div class="action-icon" style="background: #fa8c16;">
+                            <i class="fas fa-ticket-alt"></i>
+                        </div>
+                        <div class="action-label">票据管理</div>
+                    </div>
+                    <div class="quick-action-item" onclick="showToast('运营数据')">
+                        <div class="action-icon" style="background: #13c2c2;">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <div class="action-label">运营数据</div>
+                    </div>
+                    <div class="quick-action-item" onclick="openFunctionModal()">
+                        <div class="action-icon manage-icon">
+                            <i class="fas fa-cog"></i>
+                        </div>
+                        <div class="action-label">管理</div>
+                    </div>
+                </div>
+                <!-- 滑动指示器 -->
+                <div class="quick-actions-indicator">
+                    <div class="scroll-indicator" id="scrollIndicator">
+                        <div class="indicator-dots">
+                            <div class="dot active"></div>
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 异常告警横幅 -->
+        <div class="alert-banner" onclick="openAlertModal()">
+            <div class="alert-content">
+                <div class="alert-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="alert-text">
+                    <div class="alert-message">3条异常告警</div>
+                    <div class="alert-description">点击查看详情和处理状态</div>
+                </div>
+            </div>
+            <div class="nav-icon" style="background: rgba(255, 255, 255, 0.2);">
+                <i class="fas fa-chevron-right"></i>
+            </div>
+        </div>
+
+        <!-- KPI指标卡片 -->
+        <div class="kpi-cards">
+            <div class="kpi-card">
+                <div class="kpi-title">总销量</div>
+                <div class="kpi-value">¥124万</div>
+                <div class="kpi-trend">
+                    <span class="trend-indicator up">
+                        <i class="fas fa-arrow-up"></i>12%
+                    </span>
+                    <span class="trend-description">较昨日</span>
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-title">开机率</div>
+                <div class="kpi-value">98.7%</div>
+                <div class="kpi-trend">
+                    <span class="trend-indicator down">
+                        <i class="fas fa-arrow-down"></i>0.3%
+                    </span>
+                    <span class="trend-description">较昨日</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 销量走势图 -->
+        <div class="mobile-card">
+            <div class="card-header">
+                <div class="card-title">
+                    <i class="fas fa-chart-line" style="color: #1890ff;"></i>
+                    <span id="trendTitle">销量走势</span>
+                </div>
+                <div style="display: flex; gap: 4px;">
+                    <button class="btn btn-primary" id="salesBtn" onclick="switchChart('sales')">销量</button>
+                    <button class="btn btn-secondary" id="machineBtn" onclick="switchChart('machine')">开机</button>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="chart-container">
+                    <canvas id="trendChart" class="chart-canvas"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- 游戏销量占比 -->
+        <div class="mobile-card">
+            <div class="card-header">
+                <div class="card-title">
+                    <i class="fas fa-chart-pie" style="color: #1890ff;"></i>
+                    游戏销量占比
+                </div>
+                <div class="nav-icon" onclick="openGameDetailPage()">
+                    <i class="fas fa-external-link-alt"></i>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="chart-container">
+                    <canvas id="pieChart" class="chart-canvas"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- 热门玩法 -->
+        <div class="mobile-card">
+            <div class="card-header">
+                <div class="card-title">
+                    <i class="fas fa-fire" style="color: #faad14;"></i>
+                    热门玩法
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="popular-games-grid">
+                    <!-- 第1-2行：大块(2x2) -->
+                    <div class="game-tile large" style="background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);" onclick="showToast('快乐8第三星式')">
+                        <div class="tile-title">快乐8第三星式</div>
+                        <div class="tile-subtitle">高频彩玩法</div>
+                    </div>
+                    
+                    <!-- 第1行：中等块(2x1) -->
+                    <div class="game-tile medium" style="background: #52c41a;" onclick="showToast('双色球')">
+                        <div class="tile-title">双色球</div>
+                        <div class="tile-subtitle">双色球玩法</div>
+                    </div>
+                    
+                    <!-- 第1行：小块(1x1) -->
+                    <div class="game-tile small" style="background: #1890ff;" onclick="showToast('快乐8选三')">
+                        <div class="tile-title">快乐8选三</div>
+                        <div class="tile-subtitle">S3...</div>
+                    </div>
+                    
+                    <!-- 第1行：小块(1x1) -->
+                    <div class="game-tile small" style="background: #722ed1;" onclick="showToast('S3玩法')">
+                        <div class="tile-title">S3...</div>
+                        <div class="tile-subtitle">快...</div>
+                    </div>
+                    
+                    <!-- 第2行：中等块(2x1) -->
+                    <div class="game-tile medium" style="background: #eb2f96;" onclick="showToast('快三玩法')">
+                        <div class="tile-title">快三玩法</div>
+                        <div class="tile-subtitle">三D游戏</div>
+                    </div>
+                    
+                    <!-- 第2行：小块(1x1) -->
+                    <div class="game-tile small" style="background: #13c2c2;" onclick="showToast('快乐8')">
+                        <div class="tile-title">快乐8</div>
+                        <div class="tile-subtitle">选...</div>
+                    </div>
+                    
+                    <!-- 第2行：小块(1x1) -->
+                    <div class="game-tile small" style="background: #faad14;" onclick="showToast('快乐玩法')">
+                        <div class="tile-title">快乐...</div>
+                        <div class="tile-subtitle">...</div>
+                    </div>
+                    
+                    <!-- 第3行：长条块(3x1) -->
+                    <div class="game-tile wide" style="background: #389e0d;" onclick="showToast('22选5')">
+                        <div class="tile-title">22选5</div>
+                        <div class="tile-subtitle">经典玩法</div>
+                    </div>
+                    
+                    <!-- 第3行：长条块(3x1) -->
+                    <div class="game-tile wide" style="background: #722ed1;" onclick="showToast('七乐彩')">
+                        <div class="tile-title">七乐彩</div>
+                        <div class="tile-subtitle">传统玩法</div>
+                    </div>
+                    
+                    <!-- 第4行：小块(1x1) -->
+                    <div class="game-tile small" style="background: #f5222d;" onclick="showToast('快速玩法')">
+                        <div class="tile-title">快速</div>
+                        <div class="tile-subtitle">...</div>
+                    </div>
+                    
+                    <!-- 第4行：小块(1x1) -->
+                    <div class="game-tile small" style="background: #ff4d4f;" onclick="showToast('增出玩法')">
+                        <div class="tile-title">增出</div>
+                        <div class="tile-subtitle">...</div>
+                    </div>
+                    
+                    <!-- 第4行：小块(1x1) -->
+                    <div class="game-tile small" style="background: #cf1322;" onclick="showToast('即开票')">
+                        <div class="tile-title">即开票</div>
+                        <div class="tile-subtitle">...</div>
+                    </div>
+                    
+                    <!-- 第4行：小块(1x1) -->
+                    <div class="game-tile small" style="background: #531dab;" onclick="showToast('3D')">
+                        <div class="tile-title">3D</div>
+                        <div class="tile-subtitle">...</div>
+                    </div>
+                    
+                    <!-- 第4行：小块(1x1) -->
+                    <div class="game-tile small" style="background: #13c2c2;" onclick="showToast('排列三')">
+                        <div class="tile-title">排列三</div>
+                        <div class="tile-subtitle">...</div>
+                    </div>
+                    
+                    <!-- 第4行：小块(1x1) -->
+                    <div class="game-tile small" style="background: #389e0d;" onclick="showToast('排列五')">
+                        <div class="tile-title">排列五</div>
+                        <div class="tile-subtitle">...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 票单区间分布 -->
+        <div class="mobile-card">
+            <div class="card-header">
+                <div class="card-title">
+                    <i class="fas fa-dollar-sign" style="color: #52c41a;"></i>
+                    票单区间分布
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="chart-container">
+                    <canvas id="distributionChart" class="chart-canvas"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- 区县销量对比 -->
+        <div class="mobile-card">
+            <div class="card-header">
+                <div class="card-title">
+                    <i class="fas fa-map-marker-alt" style="color: #f5222d;"></i>
+                    区县销量对比
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="chart-container">
+                    <canvas id="districtChart" class="chart-canvas"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- TOP10站点销量榜 -->
+        <div class="mobile-card">
+            <div class="card-header">
+                <div class="card-title">
+                    <i class="fas fa-store" style="color: #722ed1;"></i>
+                    TOP10站点销量榜
+                </div>
+            </div>
+            <div class="card-content">
+                <table class="ranking-table">
+                    <thead>
+                        <tr>
+                            <th>排名</th>
+                            <th>站点号</th>
+                            <th>地址</th>
+                            <th>销量</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="rank-cell">
+                                    <i class="fas fa-trophy rank-icon rank-1"></i>
+                                    <span>1</span>
+                                </div>
+                            </td>
+                            <td><span class="station-id">410100001</span></td>
+                            <td>朝阳区建国路88号</td>
+                            <td><span class="sales-amount">¥24万</span></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="rank-cell">
+                                    <i class="fas fa-trophy rank-icon rank-2"></i>
+                                    <span>2</span>
+                                </div>
+                            </td>
+                            <td><span class="station-id">410100005</span></td>
+                            <td>海淀区中关村大街1号</td>
+                            <td><span class="sales-amount">¥21.8万</span></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="rank-cell">
+                                    <i class="fas fa-trophy rank-icon rank-3"></i>
+                                    <span>3</span>
+                                </div>
+                            </td>
+                            <td><span class="station-id">410100008</span></td>
+                            <td>昌平区回龙观东大街</td>
+                            <td><span class="sales-amount">¥19.2万</span></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="rank-cell">
+                                    <span>4</span>
+                                </div>
+                            </td>
+                            <td><span class="station-id">410100012</span></td>
+                            <td>丰台区南三环西路</td>
+                            <td><span class="sales-amount">¥17.5万</span></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="rank-cell">
+                                    <span>5</span>
+                                </div>
+                            </td>
+                            <td><span class="station-id">410100015</span></td>
+                            <td>西城区西单北大街</td>
+                            <td><span class="sales-amount">¥16.1万</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 展开选择器 -->
+    <div id="expandSelector" class="expand-selector" onclick="closeExpandSelector()">
+        <div class="expand-selector-content" onclick="event.stopPropagation()">
+            <div class="expand-selector-header">
+                <div class="expand-selector-title">选择区域和时间</div>
+                <button class="expand-selector-close" onclick="closeExpandSelector()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="expand-selector-body">
+                <!-- 区域选择 -->
+                <div class="selector-section">
+                    <div class="section-title">
+                        <i class="fas fa-map-marker-alt"></i>
+                        区域选择
+                    </div>
+                    <div>
+                        <select class="selector-dropdown" id="orgSelect">
+                            <option value="区域销售一部">区域销售一部</option>
+                            <option value="区域销售二部">区域销售二部</option>
+                            <option value="区域销售三部">区域销售三部</option>
+                        </select>
+                        <select class="selector-dropdown" id="citySelect">
+                            <option value="北京市 · 朝阳区">北京市 · 朝阳区</option>
+                            <option value="北京市 · 海淀区">北京市 · 海淀区</option>
+                            <option value="北京市 · 昌平区">北京市 · 昌平区</option>
+                            <option value="北京市 · 丰台区">北京市 · 丰台区</option>
+                        </select>
+                        <select class="selector-dropdown" id="adminSelect">
+                            <option value="张三">张三（当前）</option>
+                            <option value="李四">李四</option>
+                            <option value="王五">王五</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 时间选择 -->
+                <div class="selector-section">
+                    <div class="section-title">
+                        <i class="fas fa-calendar-alt"></i>
+                        时间选择
+                    </div>
+                    <div class="selector-grid">
+                        <div class="selector-item active" data-time="today">今天</div>
+                        <div class="selector-item" data-time="yesterday">昨天</div>
+                        <div class="selector-item" data-time="thisWeek">本周</div>
+                        <div class="selector-item" data-time="lastWeek">上周</div>
+                        <div class="selector-item" data-time="7days">近7天</div>
+                        <div class="selector-item" data-time="30days">近30天</div>
+                    </div>
+                    <div style="margin-top: 12px;">
+                        <input type="date" class="date-input" id="customDate" value="2024-12-20" placeholder="选择自定义日期">
+                    </div>
+                </div>
+
+                <!-- 操作按钮 -->
+                <div class="selector-actions">
+                    <button class="btn-cancel" onclick="closeExpandSelector()">取消</button>
+                    <button class="btn-confirm" onclick="confirmSelection()">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 模态框 -->
+    <div id="modalOverlay" class="modal-overlay" onclick="closeModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <div class="modal-title" id="modalTitle">标题</div>
+                <button class="modal-close" onclick="closeModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                内容
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast 消息 -->
+    <div id="toast" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.8); color: white; padding: 8px 16px; border-radius: 6px; z-index: 9999; opacity: 0; transition: opacity 0.3s;">
+        消息内容
+    </div>
+
+    <script>
+        // 全局变量
+        let charts = {};
+        
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', function() {
+            initCharts();
+            initQuickActions();
+            initExpandSelector();
+        });
+
+        // 初始化快捷功能滑动
+        function initQuickActions() {
+            const container = document.getElementById('quickActionsContainer');
+            const content = document.getElementById('quickActionsContent');
+            const scrollIndicator = document.getElementById('scrollIndicator');
+            const dots = scrollIndicator.querySelectorAll('.dot');
+            
+            let startX = 0;
+            let startY = 0;
+            let currentX = 0;
+            let currentY = 0;
+            let isDragging = false;
+            let currentIndex = 0;
+            
+            // 获取滑动配置
+            const itemWidth = 80; // 每个功能项的宽度
+            const itemGap = 16; // 项目间的间距
+            const containerWidth = container.offsetWidth - 32; // 容器宽度减去左右padding
+            const visibleItems = Math.floor(containerWidth / (itemWidth + itemGap)); // 可见的项目数
+            const totalItems = content.children.length; // 总项目数
+            const maxIndex = Math.max(0, Math.ceil(totalItems / visibleItems) - 1); // 最大页面索引
+            
+            // 更新指示器
+            function updateIndicators() {
+                dots.forEach((dot, index) => {
+                    dot.classList.toggle('active', index === currentIndex);
+                });
+            }
+            
+            // 滑动到指定索引
+            function scrollToIndex(index) {
+                currentIndex = Math.max(0, Math.min(index, maxIndex));
+                const scrollDistance = currentIndex * visibleItems * (itemWidth + itemGap);
+                content.style.transform = `translateX(-${scrollDistance}px)`;
+                updateIndicators();
+            }
+            
+            // 平滑滑动到指定位置
+            function animateToIndex(index) {
+                content.style.transition = 'transform 0.3s ease';
+                scrollToIndex(index);
+                setTimeout(() => {
+                    content.style.transition = '';
+                }, 300);
+            }
+            
+            // 触摸事件
+            content.addEventListener('touchstart', (e) => {
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+                isDragging = true;
+                currentX = startX;
+                currentY = startY;
+                content.style.transition = ''; // 移除过渡效果
+            });
+
+            content.addEventListener('touchmove', (e) => {
+                if (!isDragging) return;
+                currentX = e.touches[0].clientX;
+                currentY = e.touches[0].clientY;
+                
+                const diffX = currentX - startX;
+                const diffY = currentY - startY;
+                
+                // 判断是否为主要的水平滑动
+                if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 5) {
+                    e.preventDefault();
+                    
+                    // 计算当前滑动位置
+                    const currentTranslate = currentIndex * visibleItems * (itemWidth + itemGap);
+                    const newTranslate = currentTranslate - diffX;
+                    
+                    // 限制滑动范围
+                    const maxTranslate = maxIndex * visibleItems * (itemWidth + itemGap);
+                    const limitedTranslate = Math.max(0, Math.min(newTranslate, maxTranslate));
+                    
+                    content.style.transform = `translateX(-${limitedTranslate}px)`;
+                }
+            });
+
+            content.addEventListener('touchend', () => {
+                if (!isDragging) return;
+                isDragging = false;
+                
+                const moveX = currentX - startX;
+                const moveY = currentY - startY;
+                const threshold = 50; // 滑动阈值
+                
+                // 判断滑动方向和距离
+                if (Math.abs(moveX) > Math.abs(moveY) && Math.abs(moveX) > threshold) {
+                    if (moveX < 0) {
+                        // 左滑，下一页
+                        animateToIndex(currentIndex + 1);
+                    } else {
+                        // 右滑，上一页
+                        animateToIndex(currentIndex - 1);
+                    }
+                } else {
+                    // 恢复到当前位置
+                    animateToIndex(currentIndex);
+                }
+            });
+
+            // 添加鼠标事件支持（用于桌面测试）
+            let mouseDown = false;
+            content.addEventListener('mousedown', (e) => {
+                mouseDown = true;
+                startX = e.clientX;
+                startY = e.clientY;
+                currentX = startX;
+                currentY = startY;
+                content.style.transition = '';
+                e.preventDefault();
+            });
+
+            content.addEventListener('mousemove', (e) => {
+                if (!mouseDown) return;
+                e.preventDefault();
+                currentX = e.clientX;
+                currentY = e.clientY;
+                
+                const diffX = currentX - startX;
+                const diffY = currentY - startY;
+                
+                if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 5) {
+                    const currentTranslate = currentIndex * visibleItems * (itemWidth + itemGap);
+                    const newTranslate = currentTranslate - diffX;
+                    const maxTranslate = maxIndex * visibleItems * (itemWidth + itemGap);
+                    const limitedTranslate = Math.max(0, Math.min(newTranslate, maxTranslate));
+                    
+                    content.style.transform = `translateX(-${limitedTranslate}px)`;
+                }
+            });
+
+            content.addEventListener('mouseup', () => {
+                if (!mouseDown) return;
+                mouseDown = false;
+                
+                const moveX = currentX - startX;
+                const moveY = currentY - startY;
+                const threshold = 50;
+                
+                if (Math.abs(moveX) > Math.abs(moveY) && Math.abs(moveX) > threshold) {
+                    if (moveX < 0) {
+                        animateToIndex(currentIndex + 1);
+                    } else {
+                        animateToIndex(currentIndex - 1);
+                    }
+                } else {
+                    animateToIndex(currentIndex);
+                }
+            });
+
+            // 防止鼠标拖出容器
+            document.addEventListener('mouseup', () => {
+                if (mouseDown) {
+                    mouseDown = false;
+                    animateToIndex(currentIndex);
+                }
+            });
+
+            // 点击指示器切换
+            dots.forEach((dot, index) => {
+                dot.addEventListener('click', () => {
+                    animateToIndex(index);
+                });
+            });
+
+            // 初始化状态
+            updateIndicators();
+            
+            // 监听窗口调整
+            window.addEventListener('resize', () => {
+                scrollToIndex(currentIndex);
+            });
+        }
+
+        // 初始化展开选择器
+        function initExpandSelector() {
+            // 为时间选择项添加点击事件
+            const timeItems = document.querySelectorAll('.selector-item');
+            timeItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    // 移除所有active类
+                    timeItems.forEach(i => i.classList.remove('active'));
+                    // 为当前项添加active类
+                    this.classList.add('active');
+                    
+                    // 清空自定义日期输入
+                    const customDate = document.getElementById('customDate');
+                    if (this.dataset.time !== 'custom') {
+                        customDate.value = '';
+                    }
+                });
+            });
+
+            // 为自定义日期输入添加事件
+            const customDateInput = document.getElementById('customDate');
+            customDateInput.addEventListener('change', function() {
+                if (this.value) {
+                    // 移除所有时间选择项的active类
+                    timeItems.forEach(i => i.classList.remove('active'));
+                }
+            });
+        }
+
+        // 打开展开选择器
+        function openExpandSelector() {
+            const expandSelector = document.getElementById('expandSelector');
+            
+            // 动态计算导航头高度，调整遮罩层位置
+            const navHeader = document.querySelector('.mobile-nav-header');
+            const navHeight = navHeader ? navHeader.offsetHeight : 68;
+            
+            // 设置遮罩层从导航头下方开始
+            expandSelector.style.top = navHeight + 'px';
+            expandSelector.style.height = `calc(100% - ${navHeight}px)`;
+            
+            expandSelector.classList.add('active');
+        }
+
+        // 关闭展开选择器
+        function closeExpandSelector() {
+            const expandSelector = document.getElementById('expandSelector');
+            expandSelector.classList.remove('active');
+        }
+
+        // 确认选择
+        function confirmSelection() {
+            const orgSelect = document.getElementById('orgSelect');
+            const citySelect = document.getElementById('citySelect');
+            const adminSelect = document.getElementById('adminSelect');
+            const customDate = document.getElementById('customDate');
+            
+            // 获取选中的时间选择项
+            const activeTimeItem = document.querySelector('.selector-item.active');
+            let timeLabel = '';
+            let timeRange = '';
+            
+            if (activeTimeItem) {
+                timeLabel = activeTimeItem.textContent;
+                // 根据选择的时间类型生成日期范围
+                const today = new Date();
+                const formatDate = (date) => {
+                    return date.toISOString().split('T')[0];
+                };
+                
+                switch (activeTimeItem.dataset.time) {
+                    case 'today':
+                        timeRange = formatDate(today);
+                        break;
+                    case 'yesterday':
+                        const yesterday = new Date(today);
+                        yesterday.setDate(yesterday.getDate() - 1);
+                        timeRange = formatDate(yesterday);
+                        break;
+                    case 'thisWeek':
+                        const weekStart = new Date(today);
+                        weekStart.setDate(today.getDate() - today.getDay());
+                        timeRange = `${formatDate(weekStart)} ~ ${formatDate(today)}`;
+                        break;
+                    case 'lastWeek':
+                        const lastWeekEnd = new Date(today);
+                        lastWeekEnd.setDate(today.getDate() - today.getDay() - 1);
+                        const lastWeekStart = new Date(lastWeekEnd);
+                        lastWeekStart.setDate(lastWeekEnd.getDate() - 6);
+                        timeRange = `${formatDate(lastWeekStart)} ~ ${formatDate(lastWeekEnd)}`;
+                        break;
+                    case '7days':
+                        const sevenDaysAgo = new Date(today);
+                        sevenDaysAgo.setDate(today.getDate() - 7);
+                        timeRange = `${formatDate(sevenDaysAgo)} ~ ${formatDate(today)}`;
+                        break;
+                    case '30days':
+                        const thirtyDaysAgo = new Date(today);
+                        thirtyDaysAgo.setDate(today.getDate() - 30);
+                        timeRange = `${formatDate(thirtyDaysAgo)} ~ ${formatDate(today)}`;
+                        break;
+                }
+            } else if (customDate.value) {
+                timeLabel = '自定义';
+                timeRange = customDate.value;
+            } else {
+                // 如果没有选择任何时间，默认使用今天
+                timeLabel = '今天';
+                timeRange = new Date().toISOString().split('T')[0];
+            }
+            
+            // 更新所有导航头显示
+            const menuTitles = document.querySelectorAll('.menu-title');
+            const menuSubtitles = document.querySelectorAll('.menu-subtitle');
+            
+            menuTitles.forEach(title => {
+                if (title.textContent.includes('游戏销量详情')) {
+                    title.textContent = `游戏销量详情 · ${timeLabel}`;
+                } else {
+                    title.textContent = `${orgSelect.value} · ${timeLabel}`;
+                }
+            });
+            
+            menuSubtitles.forEach(subtitle => {
+                subtitle.textContent = `${citySelect.value} · ${timeRange}`;
+            });
+            
+            // 显示成功提示
+            showToast(`已更新：${orgSelect.value} · ${timeLabel}`);
+            
+            // 关闭选择器
+            closeExpandSelector();
+        }
+
+        // 初始化图表
+        function initCharts() {
+            // 销量走势图 - 默认显示时间销量
+            const trendCtx = document.getElementById('trendChart').getContext('2d');
+            charts.trend = new Chart(trendCtx, {
+                type: 'line',
+                data: {
+                    labels: ['7点', '8点', '9点', '10点', '11点', '12点', '13点', '14点', '15点', '16点', '17点', '18点', '19点', '20点', '21点', '22点', '23点', '24点'],
+                    datasets: [{
+                        label: '今日销量',
+                        data: [2.5, 3.2, 4.1, 5.8, 7.2, 8.5, 9.1, 10.2, 11.8, 13.5, 15.2, 18.6, 22.3, 25.1, 28.7, 32.4, 29.8, 26.5],
+                        borderColor: '#1890ff',
+                        backgroundColor: 'rgba(24, 144, 255, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }, {
+                        label: '昨日销量',
+                        data: [2.1, 2.8, 3.5, 5.2, 6.8, 8.1, 8.7, 9.6, 11.2, 12.8, 14.5, 17.2, 20.8, 23.5, 27.1, 30.8, 28.2, 25.1],
+                        borderColor: '#52c41a',
+                        backgroundColor: 'rgba(82, 196, 26, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        borderDash: [5, 5]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '万';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 饼图
+            const pieCtx = document.getElementById('pieChart').getContext('2d');
+            charts.pie = new Chart(pieCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['22选5', '双色球', '3D', '七乐彩', '快乐8', '即开票'],
+                    datasets: [{
+                        data: [30, 25, 20, 15, 7, 3],
+                        backgroundColor: [
+                            '#1890ff',
+                            '#52c41a',
+                            '#faad14',
+                            '#f5222d',
+                            '#722ed1',
+                            '#13c2c2'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 15
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 热门玩法使用网格布局，无需初始化图表
+
+            // 票单分布柱状图
+            const distributionCtx = document.getElementById('distributionChart').getContext('2d');
+            charts.distribution = new Chart(distributionCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['0-100元', '100-500元', '500-1000元', '1000+元'],
+                    datasets: [{
+                        label: '票单数量',
+                        data: [2840, 1520, 680, 200],
+                        backgroundColor: ['#1890ff', '#52c41a', '#faad14', '#f5222d'],
+                        borderRadius: 6,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '单';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 区县销量柱状图
+            const districtCtx = document.getElementById('districtChart').getContext('2d');
+            charts.district = new Chart(districtCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['朝阳区', '海淀区', '昌平区', '丰台区', '西城区', '东城区'],
+                    datasets: [{
+                        label: '销量',
+                        data: [680, 520, 450, 380, 320, 280],
+                        backgroundColor: [
+                            '#1890ff',
+                            '#52c41a',
+                            '#faad14',
+                            '#f5222d',
+                            '#722ed1',
+                            '#13c2c2'
+                        ],
+                        borderRadius: 6,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '万';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 切换图表模式
+        function switchChart(mode) {
+            const salesBtn = document.getElementById('salesBtn');
+            const machineBtn = document.getElementById('machineBtn');
+            const trendTitle = document.getElementById('trendTitle');
+            
+            if (mode === 'sales') {
+                salesBtn.className = 'btn btn-primary';
+                machineBtn.className = 'btn btn-secondary';
+                trendTitle.textContent = '销量走势';
+                
+                // 更新图表数据为时间销量数据
+                charts.trend.data.labels = ['7点', '8点', '9点', '10点', '11点', '12点', '13点', '14点', '15点', '16点', '17点', '18点', '19点', '20点', '21点', '22点', '23点', '24点'];
+                charts.trend.data.datasets[0].label = '今日销量';
+                charts.trend.data.datasets[0].data = [2.5, 3.2, 4.1, 5.8, 7.2, 8.5, 9.1, 10.2, 11.8, 13.5, 15.2, 18.6, 22.3, 25.1, 28.7, 32.4, 29.8, 26.5];
+                charts.trend.data.datasets[1].label = '昨日销量';
+                charts.trend.data.datasets[1].data = [2.1, 2.8, 3.5, 5.2, 6.8, 8.1, 8.7, 9.6, 11.2, 12.8, 14.5, 17.2, 20.8, 23.5, 27.1, 30.8, 28.2, 25.1];
+                
+                // 更新Y轴单位为万
+                charts.trend.options.scales.y.ticks.callback = function(value) {
+                    return value + '万';
+                };
+                charts.trend.update();
+                
+                showToast('已切换到销量模式 - 显示时间销量');
+            } else {
+                salesBtn.className = 'btn btn-secondary';
+                machineBtn.className = 'btn btn-primary';
+                trendTitle.textContent = '开机走势';
+                
+                // 更新图表数据为时间开机数据
+                charts.trend.data.labels = ['7点', '8点', '9点', '10点', '11点', '12点', '13点', '14点', '15点', '16点', '17点', '18点', '19点', '20点', '21点', '22点', '23点', '24点'];
+                charts.trend.data.datasets[0].label = '今日开机';
+                charts.trend.data.datasets[0].data = [1250, 1380, 1420, 1450, 1480, 1520, 1550, 1580, 1600, 1620, 1650, 1680, 1720, 1750, 1780, 1800, 1780, 1760];
+                charts.trend.data.datasets[1].label = '昨日开机';
+                charts.trend.data.datasets[1].data = [1200, 1330, 1370, 1400, 1430, 1470, 1500, 1530, 1550, 1570, 1600, 1630, 1670, 1700, 1730, 1750, 1730, 1710];
+                
+                // 更新Y轴单位为台
+                charts.trend.options.scales.y.ticks.callback = function(value) {
+                    return value + '台';
+                };
+                charts.trend.update();
+                
+                showToast('已切换到开机模式 - 显示时间开机数');
+            }
+        }
+
+
+
+        // 显示Toast消息
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.style.opacity = '1';
+            setTimeout(() => {
+                toast.style.opacity = '0';
+            }, 2000);
+        }
+
+        // 打开模态框
+        function openModal(title, content) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalBody').innerHTML = content;
+            document.getElementById('modalOverlay').classList.add('active');
+        }
+
+        // 关闭模态框
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('active');
+        }
+
+        // 各种模态框
+
+        function openScanModal() {
+            const content = `
+                <div style="text-align: center; padding: 40px 20px;">
+                    <div style="width: 200px; height: 200px; background: #f5f5f5; border: 2px dashed #d9d9d9; border-radius: 8px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-qrcode" style="font-size: 48px; color: #8c8c8c;"></i>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <div style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">扫描二维码</div>
+                        <div style="font-size: 14px; color: #8c8c8c;">将二维码放入框内，即可自动扫描</div>
+                    </div>
+                    <div style="display: flex; gap: 12px;">
+                        <button class="btn btn-secondary" style="flex: 1;" onclick="showToast('打开相册')">
+                            <i class="fas fa-image" style="margin-right: 4px;"></i>
+                            相册
+                        </button>
+                        <button class="btn btn-primary" style="flex: 1;" onclick="showToast('开始扫描')">
+                            <i class="fas fa-camera" style="margin-right: 4px;"></i>
+                            扫描
+                        </button>
+                    </div>
+                </div>
+            `;
+            openModal('扫一扫', content);
+        }
+
+        function openMessageModal() {
+            const content = `
+                <div style="padding: 16px 0;">
+                    <div style="padding: 12px 0; border-bottom: 1px solid #f0f0f0; cursor: pointer;" onclick="showToast('查看消息详情')">
+                        <div style="display: flex; align-items: center; margin-bottom: 4px;">
+                            <div style="width: 8px; height: 8px; background: #ff4d4f; border-radius: 50%; margin-right: 8px;"></div>
+                            <div style="font-weight: 600;">系统异常告警</div>
+                            <div style="margin-left: auto; font-size: 12px; color: #8c8c8c;">2分钟前</div>
+                        </div>
+                        <div style="font-size: 14px; color: #595959;">站点410100001出现连接异常</div>
+                    </div>
+                    <div style="padding: 12px 0; border-bottom: 1px solid #f0f0f0; cursor: pointer;" onclick="showToast('查看消息详情')">
+                        <div style="display: flex; align-items: center; margin-bottom: 4px;">
+                            <div style="width: 8px; height: 8px; background: #ff4d4f; border-radius: 50%; margin-right: 8px;"></div>
+                            <div style="font-weight: 600;">销量异常提醒</div>
+                            <div style="margin-left: auto; font-size: 12px; color: #8c8c8c;">1小时前</div>
+                        </div>
+                        <div style="font-size: 14px; color: #595959;">朝阳区销量较昨日下降15%</div>
+                    </div>
+                    <div style="padding: 12px 0; border-bottom: 1px solid #f0f0f0; cursor: pointer;" onclick="showToast('查看消息详情')">
+                        <div style="display: flex; align-items: center; margin-bottom: 4px;">
+                            <div style="width: 8px; height: 8px; background: #faad14; border-radius: 50%; margin-right: 8px;"></div>
+                            <div style="font-weight: 600;">系统维护通知</div>
+                            <div style="margin-left: auto; font-size: 12px; color: #8c8c8c;">2小时前</div>
+                        </div>
+                        <div style="font-size: 14px; color: #595959;">今晚22:00-24:00系统维护</div>
+                    </div>
+                </div>
+            `;
+            openModal('消息通知', content);
+        }
+
+        function openAlertModal() {
+            const content = `
+                <div style="padding: 16px 0;">
+                    <div style="background: #fff2f0; border: 1px solid #ffccc7; border-radius: 6px; padding: 12px; margin-bottom: 16px;">
+                        <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                            <i class="fas fa-exclamation-triangle" style="color: #ff4d4f; margin-right: 8px;"></i>
+                            <div style="font-weight: 600; color: #ff4d4f;">严重异常</div>
+                        </div>
+                        <div style="font-size: 14px; color: #595959; margin-bottom: 8px;">站点410100001连接中断</div>
+                        <div style="font-size: 12px; color: #8c8c8c;">发生时间：2024-12-20 14:30</div>
+                    </div>
+                    <div style="background: #fff7e6; border: 1px solid #ffd591; border-radius: 6px; padding: 12px; margin-bottom: 16px;">
+                        <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                            <i class="fas fa-exclamation-triangle" style="color: #faad14; margin-right: 8px;"></i>
+                            <div style="font-weight: 600; color: #faad14;">一般异常</div>
+                        </div>
+                        <div style="font-size: 14px; color: #595959; margin-bottom: 8px;">朝阳区销量异常下降</div>
+                        <div style="font-size: 12px; color: #8c8c8c;">发生时间：2024-12-20 13:45</div>
+                    </div>
+                    <div style="background: #fff7e6; border: 1px solid #ffd591; border-radius: 6px; padding: 12px;">
+                        <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                            <i class="fas fa-exclamation-triangle" style="color: #faad14; margin-right: 8px;"></i>
+                            <div style="font-weight: 600; color: #faad14;">一般异常</div>
+                        </div>
+                        <div style="font-size: 14px; color: #595959; margin-bottom: 8px;">站点410100005证书即将过期</div>
+                        <div style="font-size: 12px; color: #8c8c8c;">发生时间：2024-12-20 12:20</div>
+                    </div>
+                </div>
+            `;
+            openModal('异常告警详情', content);
+        }
+
+        function openFunctionModal() {
+            const content = `
+                <div style="padding: 16px 0;">
+                    <div style="background: #f6ffed; border: 1px solid #b7eb8f; border-radius: 6px; padding: 8px 12px; margin-bottom: 16px; font-size: 12px; color: #389e0d;">
+                        拖拽调整顺序，点击隐藏/显示功能
+                    </div>
+                    <div style="max-height: 300px; overflow-y: auto;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px; background: #fafafa; border-radius: 8px; margin-bottom: 8px;">
+                            <div style="display: flex; align-items: center;">
+                                <div style="width: 32px; height: 32px; background: #1890ff; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 12px;">
+                                    <i class="fas fa-building" style="color: white; font-size: 14px;"></i>
+                                </div>
+                                <span style="font-weight: 500;">网点档案</span>
+                            </div>
+                            <div>
+                                <button class="btn btn-secondary" onclick="showToast('隐藏功能')">隐藏</button>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px; background: #fafafa; border-radius: 8px; margin-bottom: 8px;">
+                            <div style="display: flex; align-items: center;">
+                                <div style="width: 32px; height: 32px; background: #52c41a; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 12px;">
+                                    <i class="fas fa-power-off" style="color: white; font-size: 14px;"></i>
+                                </div>
+                                <span style="font-weight: 500;">网点停开机</span>
+                            </div>
+                            <div>
+                                <button class="btn btn-secondary" onclick="showToast('隐藏功能')">隐藏</button>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px; background: #fafafa; border-radius: 8px; margin-bottom: 8px;">
+                            <div style="display: flex; align-items: center;">
+                                <div style="width: 32px; height: 32px; background: #faad14; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 12px;">
+                                    <i class="fas fa-certificate" style="color: white; font-size: 14px;"></i>
+                                </div>
+                                <span style="font-weight: 500;">证书重置</span>
+                            </div>
+                            <div>
+                                <button class="btn btn-secondary" onclick="showToast('隐藏功能')">隐藏</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            openModal('功能管理', content);
+        }
+
+        // 打开游戏详情页面
+        function openGameDetailPage() {
+            // 创建新页面
+            const gameDetailPage = document.createElement('div');
+            gameDetailPage.id = 'gameDetailPage';
+            gameDetailPage.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: #f5f5f5;
+                z-index: 1001;
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+            `;
+
+            const gameDetailContent = `
+                <!-- 导航头 -->
+                <header class="mobile-nav-header">
+                    <div class="nav-left">
+                        <div class="nav-icon" onclick="closeGameDetailPage()">
+                            <i class="fas fa-arrow-left"></i>
+                        </div>
+                        <div class="hamburger-menu" onclick="openExpandSelector()" style="margin-left: 8px;">
+                            <div class="menu-info">
+                                <div class="menu-title">游戏销量详情 · 今天</div>
+                                <div class="menu-subtitle">北京市 · 朝阳区 · 2024-12-20</div>
+                            </div>
+                            <i class="fas fa-chevron-down" style="font-size: 12px; margin-left: 4px;"></i>
+                        </div>
+                    </div>
+                    <div class="nav-right">
+                        <div class="nav-icon" onclick="showToast('导出数据')">
+                            <i class="fas fa-download"></i>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- 游戏列表 -->
+                <div class="homepage-content" style="padding-top: 16px;">
+                    <div class="mobile-card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fas fa-list" style="color: #1890ff;"></i>
+                                游戏销量排行
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <table class="ranking-table">
+                                <thead>
+                                    <tr>
+                                        <th>游戏名称</th>
+                                        <th>销量</th>
+                                        <th>占比</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div style="display: flex; align-items: center; gap: 8px;">
+                                                <div style="width: 12px; height: 12px; background: #1890ff; border-radius: 50%;"></div>
+                                                <span style="font-weight: 600;">双色球</span>
+                                            </div>
+                                        </td>
+                                        <td><span class="sales-amount">¥35万</span></td>
+                                        <td>28.2%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div style="display: flex; align-items: center; gap: 8px;">
+                                                <div style="width: 12px; height: 12px; background: #52c41a; border-radius: 50%;"></div>
+                                                <span style="font-weight: 600;">22选5</span>
+                                            </div>
+                                        </td>
+                                        <td><span class="sales-amount">¥30万</span></td>
+                                        <td>24.2%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div style="display: flex; align-items: center; gap: 8px;">
+                                                <div style="width: 12px; height: 12px; background: #faad14; border-radius: 50%;"></div>
+                                                <span style="font-weight: 600;">3D</span>
+                                            </div>
+                                        </td>
+                                        <td><span class="sales-amount">¥25万</span></td>
+                                        <td>20.2%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div style="display: flex; align-items: center; gap: 8px;">
+                                                <div style="width: 12px; height: 12px; background: #f5222d; border-radius: 50%;"></div>
+                                                <span style="font-weight: 600;">七乐彩</span>
+                                            </div>
+                                        </td>
+                                        <td><span class="sales-amount">¥18万</span></td>
+                                        <td>14.5%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div style="display: flex; align-items: center; gap: 8px;">
+                                                <div style="width: 12px; height: 12px; background: #722ed1; border-radius: 50%;"></div>
+                                                <span style="font-weight: 600;">快乐8</span>
+                                            </div>
+                                        </td>
+                                        <td><span class="sales-amount">¥10万</span></td>
+                                        <td>8.1%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div style="display: flex; align-items: center; gap: 8px;">
+                                                <div style="width: 12px; height: 12px; background: #13c2c2; border-radius: 50%;"></div>
+                                                <span style="font-weight: 600;">即开票</span>
+                                            </div>
+                                        </td>
+                                        <td><span class="sales-amount">¥6万</span></td>
+                                        <td>4.8%</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            gameDetailPage.innerHTML = gameDetailContent;
+            document.body.appendChild(gameDetailPage);
+
+            // 显示页面
+            setTimeout(() => {
+                gameDetailPage.style.transform = 'translateX(0)';
+            }, 10);
+        }
+
+        // 关闭游戏详情页面
+        function closeGameDetailPage() {
+            const gameDetailPage = document.getElementById('gameDetailPage');
+            if (gameDetailPage) {
+                gameDetailPage.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    gameDetailPage.remove();
+                }, 300);
+            }
+        }
+
+        // 防止页面滚动时的橡皮筋效果
+        document.addEventListener('touchmove', function(e) {
+            if (e.target.closest('.modal-overlay') || e.target.closest('.chart-container')) {
+                return;
+            }
+            e.preventDefault();
+        }, { passive: false });
+
+        // 添加下拉刷新功能
+        let startY = 0;
+        let pullToRefresh = false;
+
+        document.addEventListener('touchstart', function(e) {
+            startY = e.touches[0].clientY;
+        });
+
+        document.addEventListener('touchmove', function(e) {
+            if (window.scrollY === 0 && e.touches[0].clientY > startY + 100) {
+                pullToRefresh = true;
+                // 显示刷新指示器
+                showToast('松开刷新');
+            }
+        });
+
+        document.addEventListener('touchend', function(e) {
+            if (pullToRefresh) {
+                pullToRefresh = false;
+                // 执行刷新
+                refreshData();
+            }
+        });
+
+        function refreshData() {
+            showToast('正在刷新数据...');
+            // 模拟数据刷新
+            setTimeout(() => {
+                showToast('数据已更新');
+                // 更新图表数据
+                updateCharts();
+            }, 1000);
+        }
+
+        function updateCharts() {
+            // 生成新的随机数据
+            const newSalesData = Array.from({length: 9}, () => Math.floor(Math.random() * 40) + 10);
+            const newYesterdayData = Array.from({length: 9}, () => Math.floor(Math.random() * 35) + 8);
+            
+            charts.trend.data.datasets[0].data = newSalesData;
+            charts.trend.data.datasets[1].data = newYesterdayData;
+            charts.trend.update();
+        }
+    </script>
+</body>
+</html> 
