@@ -549,7 +549,7 @@
             font-size: 24px;
             font-weight: 700;
             color: #262626;
-            margin-bottom: 4px;
+            margin-bottom: 0;
         }
 
         .kpi-trend {
@@ -1148,12 +1148,14 @@
         <div class="kpi-cards">
             <div class="kpi-card" onclick="openSalesQueryPage()" style="cursor: pointer;">
                 <div class="kpi-title">总销量</div>
-                <div class="kpi-value">124万</div>
-                <div class="kpi-trend">
-                    <span class="trend-indicator up">
-                        <i class="fas fa-arrow-up"></i>12%
-                    </span>
-                    <span class="trend-description">较昨日</span>
+                <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px;">
+                    <div class="kpi-value">124万</div>
+                    <div class="kpi-trend">
+                        <span class="trend-indicator up">
+                            <i class="fas fa-arrow-up"></i>12%
+                        </span>
+                        <span class="trend-description">较昨日</span>
+                    </div>
                 </div>
                 <div class="kpi-sub-items">
                     <div class="kpi-sub-item">
@@ -1168,12 +1170,14 @@
             </div>
             <div class="kpi-card" onclick="openMachineStatusPage()" style="cursor: pointer;">
                 <div class="kpi-title">开机率（电脑票）</div>
-                <div class="kpi-value">98.7%</div>
-                <div class="kpi-trend">
-                    <span class="trend-indicator down">
-                        <i class="fas fa-arrow-down"></i>0.3%
-                    </span>
-                    <span class="trend-description">较昨日</span>
+                <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px;">
+                    <div class="kpi-value">98.7%</div>
+                    <div class="kpi-trend">
+                        <span class="trend-indicator down">
+                            <i class="fas fa-arrow-down"></i>0.3%
+                        </span>
+                        <span class="trend-description">较昨日</span>
+                    </div>
                 </div>
                 <div class="kpi-sub-items">
                     <div class="kpi-sub-item">
@@ -1215,7 +1219,7 @@
                     游戏销量占比
                 </div>
                 <div class="nav-icon" onclick="openGameDetailPage()">
-                    <i class="fas fa-external-link-alt"></i>
+                    <i class="fas fa-ellipsis-h"></i>
                 </div>
             </div>
             <div class="card-content">
