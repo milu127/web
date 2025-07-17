@@ -32,12 +32,16 @@
             align-items: center;
             justify-content: space-between;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            position: sticky;
+            position: fixed;
             top: 0;
-            z-index: 100;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
             max-width: 430px;
-            margin: 0 auto;
-            border-radius: 0 0 12px 12px; /* 底部圆角与内容区域协调 */
+            z-index: 1000;
+            border-radius: 12px 12px 0 0; /* 顶部圆角 */
+            border: 1px solid #e8e8e8; /* 外边框 */
+            border-bottom: none; /* 去掉底部边框，与下面内容连接 */
         }
 
         .nav-left {
@@ -119,87 +123,7 @@
             text-align: center;
         }
 
-        /* 展开选择器 */
-        .expand-selector {
-            position: fixed;
-            top: 0; /* 从页面最顶部开始，遮住导航头 */
-            left: 0;
-            width: 100%;
-            height: 100%; /* 覆盖整个页面 */
-            background: transparent; /* 去掉遮罩效果 */
-            z-index: 1000; /* 高于所有组件，确保遮住导航头 */
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-        }
 
-        .expand-selector.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .expand-selector-content {
-            position: absolute;
-            top: 0; /* 与页面顶部完全平齐 */
-            left: 50%;
-            transform: translateX(-50%) translateY(-100%); /* 初始状态向上隐藏 */
-            background: white;
-            border-radius: 0 0 20px 20px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-            transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.2);
-            min-width: 300px;
-            max-width: 430px; /* 与首页内容宽度一致 */
-            width: calc(100% - 32px); /* 响应式宽度 */
-            overflow: hidden;
-            z-index: 102; /* 确保在遮罩层之上 */
-        }
-
-        .expand-selector.active .expand-selector-content {
-            transform: translateX(-50%) translateY(0); /* 显示时与顶部完全平齐 */
-        }
-
-        .expand-selector-header {
-            background: linear-gradient(135deg, #1890ff 0%, #40a9ff 100%);
-            color: white;
-            padding: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .expand-selector-title {
-            font-size: 16px;
-            font-weight: 600;
-        }
-
-        .expand-selector-close {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 18px;
-            cursor: pointer;
-            padding: 4px;
-            border-radius: 4px;
-            transition: background-color 0.2s;
-        }
-
-        .expand-selector-close:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .expand-selector-body {
-            padding: 20px;
-            max-height: calc(100vh - 120px); /* 减去头部高度，适应整个屏幕 */
-            overflow-y: auto;
-        }
-
-        .selector-section {
-            margin-bottom: 24px;
-        }
-
-        .selector-section:last-child {
-            margin-bottom: 0;
-        }
 
         .section-title {
             font-size: 14px;
@@ -273,52 +197,24 @@
             box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
         }
 
-        .selector-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 20px;
-            padding-top: 16px;
-            border-top: 1px solid #f0f0f0;
-        }
 
-        .selector-actions button {
-            flex: 1;
-            padding: 10px 16px;
-            border: none;
-            border-radius: 6px;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
 
-        .btn-cancel {
-            background: #f5f5f5;
-            color: #595959;
-        }
-
-        .btn-cancel:hover {
-            background: #e6f7ff;
-            color: #1890ff;
-        }
-
-        .btn-confirm {
-            background: #1890ff;
-            color: white;
-        }
-
-        .btn-confirm:hover {
-            background: #40a9ff;
+        /* 页面容器 */
+        .page-container {
+            max-width: 430px;
+            margin: 0 auto;
+            border: 1px solid #e8e8e8; /* 浅色边框 */
+            border-radius: 0 0 12px 12px; /* 底部圆角 */
+            border-top: none; /* 去掉顶部边框，与导航头连接 */
+            background: #fafafa; /* 浅色背景 */
+            overflow: hidden; /* 隐藏溢出内容 */
+            margin-top: 68px; /* 为固定导航头留出空间 */
         }
 
         /* 主要内容区域 */
         .homepage-content {
             padding: 16px;
-            max-width: 430px;
-            margin: 0 auto;
-            border: 1px solid #e8e8e8; /* 浅色边框 */
-            border-radius: 12px; /* 圆角边框 */
             background: #fafafa; /* 浅色背景 */
-            margin-top: 6px; /* 与导航头的间距减少到3/4 */
         }
 
         /* 通用卡片样式 */
@@ -457,7 +353,7 @@
             background: #1890ff;
         }
 
-        /* 热门玩法网格布局 */
+        /* 热线玩法分布网格布局 */
         .popular-games-grid {
             display: grid;
             grid-template-columns: repeat(6, 1fr);
@@ -678,9 +574,68 @@
             color: #ff4d4f;
         }
 
-        .trend-description {
+                .trend-description {
             font-size: 10px;
             color: #8c8c8c;
+        }
+
+        /* KPI子项样式 */
+        .kpi-sub-items {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .kpi-sub-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .kpi-sub-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .kpi-sub-label {
+            font-size: 11px;
+            color: #8c8c8c;
+            font-weight: 500;
+        }
+
+        .kpi-sub-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1890ff;
+        }
+
+        /* KPI网格样式 */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .kpi-item {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            text-align: center;
+        }
+
+        .kpi-grid .kpi-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1890ff;
+            margin-bottom: 4px;
+        }
+
+        .kpi-label {
+            font-size: 12px;
+            color: #8c8c8c;
+            font-weight: 500;
         }
 
         /* 图表容器 */
@@ -878,6 +833,12 @@
             
             .mobile-nav-header {
                 padding: 10px 12px;
+                max-width: 375px;
+            }
+            
+            .page-container {
+                max-width: 375px;
+                margin-top: 60px; /* 小屏幕上调整导航头高度 */
             }
             
             .menu-title {
@@ -908,23 +869,7 @@
                 font-size: 11px;
             }
             
-            /* 展开选择器响应式 */
-            .expand-selector {
-                top: 58px; /* 小屏幕上导航头较小 */
-                height: calc(100% - 58px); /* 对应调整高度 */
-            }
-            
-            .expand-selector-content {
-                top: 0; /* 相对于遮罩层顶部 */
-                left: 50%; /* 保持居中 */
-                min-width: 260px;
-                max-width: 375px; /* 小屏幕最大宽度 */
-                width: calc(100% - 24px); /* 小屏幕边距调整 */
-            }
-            
-            .expand-selector-body {
-                padding: 16px;
-            }
+
             
             .selector-grid {
                 grid-template-columns: 1fr;
@@ -978,21 +923,7 @@
             animation: pulse 2s infinite;
         }
 
-        /* 展开选择器进入动画 */
-        @keyframes expandIn {
-            from {
-                transform: translateX(-50%) scale(0);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(-50%) scale(1);
-                opacity: 1;
-            }
-        }
 
-        .expand-selector.active .expand-selector-content {
-            animation: expandIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.2);
-        }
 
         /* 加载状态 */
         .loading {
@@ -1017,6 +948,78 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        /* 游戏块tooltip */
+        .game-tile {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .game-tile::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            top: -45px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #1890ff, #40a9ff);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 500;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            max-width: 200px;
+            text-align: center;
+        }
+
+        .game-tile:hover::after {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(-5px);
+        }
+
+        .game-tile::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 6px solid #1890ff;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .game-tile:hover::before {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(-5px);
+        }
+
+        /* 确保tooltip在网格容器内正确显示 */
+        .popular-games-grid {
+            position: relative;
+            overflow: visible;
+        }
+
+        /* 移动端触摸优化 */
+        @media (max-width: 768px) {
+            .game-tile::after {
+                font-size: 10px;
+                padding: 6px 10px;
+                max-width: 150px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1026,8 +1029,8 @@
             <div class="hamburger-menu" onclick="openExpandSelector()">
                 <i class="fas fa-bars"></i>
                 <div class="menu-info">
-                    <div class="menu-title">区域销售一部 · 今天</div>
-                    <div class="menu-subtitle">北京市 · 朝阳区 · 2024-12-20</div>
+                    <div class="menu-title">区域销售一部 · 全部游戏 · 今天</div>
+                    <div class="menu-subtitle">区域销售一部 · 全部游戏 · 2024-12-20</div>
                 </div>
                 <i class="fas fa-chevron-down" style="font-size: 12px; margin-left: 4px;"></i>
             </div>
@@ -1043,8 +1046,10 @@
         </div>
     </header>
 
-    <!-- 主要内容 -->
-    <div class="homepage-content">
+    <!-- 页面容器 -->
+    <div class="page-container">
+        <!-- 主要内容 -->
+        <div class="homepage-content">
         <!-- 快捷功能面板 -->
         <div class="quick-actions mobile-card">
             <div class="quick-actions-container" id="quickActionsContainer">
@@ -1141,24 +1146,44 @@
 
         <!-- KPI指标卡片 -->
         <div class="kpi-cards">
-            <div class="kpi-card">
+            <div class="kpi-card" onclick="openSalesQueryPage()" style="cursor: pointer;">
                 <div class="kpi-title">总销量</div>
-                <div class="kpi-value">¥124万</div>
+                <div class="kpi-value">124万</div>
                 <div class="kpi-trend">
                     <span class="trend-indicator up">
                         <i class="fas fa-arrow-up"></i>12%
                     </span>
                     <span class="trend-description">较昨日</span>
                 </div>
+                <div class="kpi-sub-items">
+                    <div class="kpi-sub-item">
+                        <div class="kpi-sub-label">电脑票</div>
+                        <div class="kpi-sub-value">86万</div>
+                    </div>
+                    <div class="kpi-sub-item">
+                        <div class="kpi-sub-label">即开票</div>
+                        <div class="kpi-sub-value">38万</div>
+                    </div>
+                </div>
             </div>
-            <div class="kpi-card">
-                <div class="kpi-title">开机率</div>
+            <div class="kpi-card" onclick="openMachineStatusPage()" style="cursor: pointer;">
+                <div class="kpi-title">开机率（电脑票）</div>
                 <div class="kpi-value">98.7%</div>
                 <div class="kpi-trend">
                     <span class="trend-indicator down">
                         <i class="fas fa-arrow-down"></i>0.3%
                     </span>
                     <span class="trend-description">较昨日</span>
+                </div>
+                <div class="kpi-sub-items">
+                    <div class="kpi-sub-item">
+                        <div class="kpi-sub-label">开机数</div>
+                        <div class="kpi-sub-value">9,870</div>
+                    </div>
+                    <div class="kpi-sub-item">
+                        <div class="kpi-sub-label">站点数</div>
+                        <div class="kpi-sub-value">10,000</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1200,102 +1225,105 @@
             </div>
         </div>
 
-        <!-- 热门玩法 -->
+        <!-- 热线玩法分布 -->
         <div class="mobile-card">
             <div class="card-header">
                 <div class="card-title">
                     <i class="fas fa-fire" style="color: #faad14;"></i>
-                    热门玩法
+                    热线玩法分布
+                </div>
+                <div class="nav-icon" onclick="openGameplayDetailPage()">
+                    <i class="fas fa-ellipsis-h"></i>
                 </div>
             </div>
             <div class="card-content">
                 <div class="popular-games-grid">
                     <!-- 第1-2行：大块(2x2) -->
-                    <div class="game-tile large" style="background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);" onclick="showToast('快乐8第三星式')">
+                    <div class="game-tile large" style="background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);" onclick="showToast('快乐8第三星式')" data-tooltip="快乐8第三星式 ● 销量: 28.5万 ● 占比: 22.1%">
                         <div class="tile-title">快乐8第三星式</div>
                         <div class="tile-subtitle">高频彩玩法</div>
                     </div>
                     
                     <!-- 第1行：中等块(2x1) -->
-                    <div class="game-tile medium" style="background: #52c41a;" onclick="showToast('双色球')">
+                    <div class="game-tile medium" style="background: #52c41a;" onclick="showToast('双色球')" data-tooltip="双色球 ● 销量: 35.2万 ● 占比: 27.3%">
                         <div class="tile-title">双色球</div>
                         <div class="tile-subtitle">双色球玩法</div>
                     </div>
                     
                     <!-- 第1行：小块(1x1) -->
-                    <div class="game-tile small" style="background: #1890ff;" onclick="showToast('快乐8选三')">
+                    <div class="game-tile small" style="background: #1890ff;" onclick="showToast('快乐8选三')" data-tooltip="快乐8选三 ● 销量: 8.5万 ● 占比: 6.6%">
                         <div class="tile-title">快乐8选三</div>
                         <div class="tile-subtitle">S3...</div>
                     </div>
                     
                     <!-- 第1行：小块(1x1) -->
-                    <div class="game-tile small" style="background: #722ed1;" onclick="showToast('S3玩法')">
+                    <div class="game-tile small" style="background: #722ed1;" onclick="showToast('S3玩法')" data-tooltip="S3玩法 ● 销量: 5.8万 ● 占比: 4.5%">
                         <div class="tile-title">S3...</div>
                         <div class="tile-subtitle">快...</div>
                     </div>
                     
                     <!-- 第2行：中等块(2x1) -->
-                    <div class="game-tile medium" style="background: #eb2f96;" onclick="showToast('快三玩法')">
+                    <div class="game-tile medium" style="background: #eb2f96;" onclick="showToast('快三玩法')" data-tooltip="快三玩法 ● 销量: 12.6万 ● 占比: 9.8%">
                         <div class="tile-title">快三玩法</div>
                         <div class="tile-subtitle">三D游戏</div>
                     </div>
                     
                     <!-- 第2行：小块(1x1) -->
-                    <div class="game-tile small" style="background: #13c2c2;" onclick="showToast('快乐8')">
+                    <div class="game-tile small" style="background: #13c2c2;" onclick="showToast('快乐8')" data-tooltip="快乐8 ● 销量: 15.3万 ● 占比: 11.9%">
                         <div class="tile-title">快乐8</div>
                         <div class="tile-subtitle">选...</div>
                     </div>
                     
                     <!-- 第2行：小块(1x1) -->
-                    <div class="game-tile small" style="background: #faad14;" onclick="showToast('快乐玩法')">
+                    <div class="game-tile small" style="background: #faad14;" onclick="showToast('快乐玩法')" data-tooltip="快乐玩法 ● 销量: 3.2万 ● 占比: 2.5%">
                         <div class="tile-title">快乐...</div>
                         <div class="tile-subtitle">...</div>
                     </div>
                     
                     <!-- 第3行：长条块(3x1) -->
-                    <div class="game-tile wide" style="background: #389e0d;" onclick="showToast('22选5')">
+                    <div class="game-tile wide" style="background: #389e0d;" onclick="showToast('22选5')" data-tooltip="22选5 ● 销量: 22.1万 ● 占比: 17.2%">
                         <div class="tile-title">22选5</div>
                         <div class="tile-subtitle">经典玩法</div>
                     </div>
                     
                     <!-- 第3行：长条块(3x1) -->
-                    <div class="game-tile wide" style="background: #722ed1;" onclick="showToast('七乐彩')">
+                    <div class="game-tile wide" style="background: #722ed1;" onclick="showToast('七乐彩')" data-tooltip="七乐彩 ● 销量: 18.7万 ● 占比: 14.5%">
                         <div class="tile-title">七乐彩</div>
                         <div class="tile-subtitle">传统玩法</div>
                     </div>
                     
                     <!-- 第4行：小块(1x1) -->
-                    <div class="game-tile small" style="background: #f5222d;" onclick="showToast('快速玩法')">
+                    <div class="game-tile small" style="background: #f5222d;" onclick="showToast('快速玩法')" data-tooltip="快速玩法 ● 销量: 1.8万 ● 占比: 1.4%">
                         <div class="tile-title">快速</div>
                         <div class="tile-subtitle">...</div>
                     </div>
                     
                     <!-- 第4行：小块(1x1) -->
-                    <div class="game-tile small" style="background: #ff4d4f;" onclick="showToast('增出玩法')">
+                    <div class="game-tile small" style="background: #ff4d4f;" onclick="showToast('增出玩法')" data-tooltip="增出玩法 ● 销量: 1.2万 ● 占比: 0.9%">
                         <div class="tile-title">增出</div>
                         <div class="tile-subtitle">...</div>
                     </div>
                     
                     <!-- 第4行：小块(1x1) -->
-                    <div class="game-tile small" style="background: #cf1322;" onclick="showToast('即开票')">
+                    <div class="game-tile small" style="background: #cf1322;" onclick="showToast('即开票')" data-tooltip="即开票 ● 销量: 6.5万 ● 占比: 5.1%">
                         <div class="tile-title">即开票</div>
                         <div class="tile-subtitle">...</div>
                     </div>
                     
                     <!-- 第4行：小块(1x1) -->
-                    <div class="game-tile small" style="background: #531dab;" onclick="showToast('3D')">
+                    <div class="game-tile small" style="background: #531dab;" onclick="showToast('3D')" data-tooltip="3D ● 销量: 25.8万 ● 占比: 20.1%">
                         <div class="tile-title">3D</div>
                         <div class="tile-subtitle">...</div>
                     </div>
                     
                     <!-- 第4行：小块(1x1) -->
-                    <div class="game-tile small" style="background: #13c2c2;" onclick="showToast('排列三')">
+                    <div class="game-tile small" style="background: #13c2c2;" onclick="showToast('排列三')" data-tooltip="排列三 ● 销量: 9.3万 ● 占比: 7.2%">
                         <div class="tile-title">排列三</div>
                         <div class="tile-subtitle">...</div>
                     </div>
                     
                     <!-- 第4行：小块(1x1) -->
-                    <div class="game-tile small" style="background: #389e0d;" onclick="showToast('排列五')">
+                    <div class="game-tile small" style="background: #389e0d;" onclick="showToast('排列五')" data-tooltip="排列五 ● 销量: 11.6万 ● 占比: 9.0%">
                         <div class="tile-title">排列五</div>
                         <div class="tile-subtitle">...</div>
                     </div>
@@ -1303,12 +1331,15 @@
             </div>
         </div>
 
-        <!-- 票单区间分布 -->
+        <!-- 单票区间分布 -->
         <div class="mobile-card">
             <div class="card-header">
                 <div class="card-title">
                     <i class="fas fa-dollar-sign" style="color: #52c41a;"></i>
-                    票单区间分布
+                    单票区间分布
+                </div>
+                <div class="nav-icon" onclick="openTicketIntervalDetailPage()">
+                    <i class="fas fa-ellipsis-h"></i>
                 </div>
             </div>
             <div class="card-content">
@@ -1325,6 +1356,9 @@
                     <i class="fas fa-map-marker-alt" style="color: #f5222d;"></i>
                     区县销量对比
                 </div>
+                <div class="nav-icon" onclick="openDistrictSalesDetailPage()">
+                    <i class="fas fa-ellipsis-h"></i>
+                </div>
             </div>
             <div class="card-content">
                 <div class="chart-container">
@@ -1339,6 +1373,9 @@
                 <div class="card-title">
                     <i class="fas fa-store" style="color: #722ed1;"></i>
                     TOP10站点销量榜
+                </div>
+                <div class="nav-icon" onclick="openTop10StationsDetailPage()">
+                    <i class="fas fa-ellipsis-h"></i>
                 </div>
             </div>
             <div class="card-content">
@@ -1361,7 +1398,7 @@
                             </td>
                             <td><span class="station-id">410100001</span></td>
                             <td>朝阳区建国路88号</td>
-                            <td><span class="sales-amount">¥24万</span></td>
+                            <td><span class="sales-amount">24万</span></td>
                         </tr>
                         <tr>
                             <td>
@@ -1372,7 +1409,7 @@
                             </td>
                             <td><span class="station-id">410100005</span></td>
                             <td>海淀区中关村大街1号</td>
-                            <td><span class="sales-amount">¥21.8万</span></td>
+                            <td><span class="sales-amount">21.8万</span></td>
                         </tr>
                         <tr>
                             <td>
@@ -1383,7 +1420,7 @@
                             </td>
                             <td><span class="station-id">410100008</span></td>
                             <td>昌平区回龙观东大街</td>
-                            <td><span class="sales-amount">¥19.2万</span></td>
+                            <td><span class="sales-amount">19.2万</span></td>
                         </tr>
                         <tr>
                             <td>
@@ -1393,7 +1430,7 @@
                             </td>
                             <td><span class="station-id">410100012</span></td>
                             <td>丰台区南三环西路</td>
-                            <td><span class="sales-amount">¥17.5万</span></td>
+                            <td><span class="sales-amount">17.5万</span></td>
                         </tr>
                         <tr>
                             <td>
@@ -1403,77 +1440,66 @@
                             </td>
                             <td><span class="station-id">410100015</span></td>
                             <td>西城区西单北大街</td>
-                            <td><span class="sales-amount">¥16.1万</span></td>
+                            <td><span class="sales-amount">16.1万</span></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="rank-cell">
+                                    <span>6</span>
+                                </div>
+                            </td>
+                            <td><span class="station-id">410100018</span></td>
+                            <td>东城区王府井大街</td>
+                            <td><span class="sales-amount">14.6万</span></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="rank-cell">
+                                    <span>7</span>
+                                </div>
+                            </td>
+                            <td><span class="station-id">410100021</span></td>
+                            <td>石景山区石景山路</td>
+                            <td><span class="sales-amount">13.2万</span></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="rank-cell">
+                                    <span>8</span>
+                                </div>
+                            </td>
+                            <td><span class="station-id">410100024</span></td>
+                            <td>通州区梨园镇新华大街</td>
+                            <td><span class="sales-amount">12.8万</span></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="rank-cell">
+                                    <span>9</span>
+                                </div>
+                            </td>
+                            <td><span class="station-id">410100027</span></td>
+                            <td>大兴区黄村镇兴华大街</td>
+                            <td><span class="sales-amount">11.4万</span></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="rank-cell">
+                                    <span>10</span>
+                                </div>
+                            </td>
+                            <td><span class="station-id">410100030</span></td>
+                            <td>房山区良乡镇长虹大街</td>
+                            <td><span class="sales-amount">10.9万</span></td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
+    <!-- 页面容器结束 -->
 
-    <!-- 展开选择器 -->
-    <div id="expandSelector" class="expand-selector" onclick="closeExpandSelector()">
-        <div class="expand-selector-content" onclick="event.stopPropagation()">
-            <div class="expand-selector-header">
-                <div class="expand-selector-title">选择区域和时间</div>
-                <button class="expand-selector-close" onclick="closeExpandSelector()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="expand-selector-body">
-                <!-- 区域选择 -->
-                <div class="selector-section">
-                    <div class="section-title">
-                        <i class="fas fa-map-marker-alt"></i>
-                        区域选择
-                    </div>
-                    <div>
-                        <select class="selector-dropdown" id="orgSelect">
-                            <option value="区域销售一部">区域销售一部</option>
-                            <option value="区域销售二部">区域销售二部</option>
-                            <option value="区域销售三部">区域销售三部</option>
-                        </select>
-                        <select class="selector-dropdown" id="citySelect">
-                            <option value="北京市 · 朝阳区">北京市 · 朝阳区</option>
-                            <option value="北京市 · 海淀区">北京市 · 海淀区</option>
-                            <option value="北京市 · 昌平区">北京市 · 昌平区</option>
-                            <option value="北京市 · 丰台区">北京市 · 丰台区</option>
-                        </select>
-                        <select class="selector-dropdown" id="adminSelect">
-                            <option value="张三">张三（当前）</option>
-                            <option value="李四">李四</option>
-                            <option value="王五">王五</option>
-                        </select>
-                    </div>
-                </div>
 
-                <!-- 时间选择 -->
-                <div class="selector-section">
-                    <div class="section-title">
-                        <i class="fas fa-calendar-alt"></i>
-                        时间选择
-                    </div>
-                    <div class="selector-grid">
-                        <div class="selector-item active" data-time="today">今天</div>
-                        <div class="selector-item" data-time="yesterday">昨天</div>
-                        <div class="selector-item" data-time="thisWeek">本周</div>
-                        <div class="selector-item" data-time="lastWeek">上周</div>
-                        <div class="selector-item" data-time="7days">近7天</div>
-                        <div class="selector-item" data-time="30days">近30天</div>
-                    </div>
-                    <div style="margin-top: 12px;">
-                        <input type="date" class="date-input" id="customDate" value="2024-12-20" placeholder="选择自定义日期">
-                    </div>
-                </div>
-
-                <!-- 操作按钮 -->
-                <div class="selector-actions">
-                    <button class="btn-cancel" onclick="closeExpandSelector()">取消</button>
-                    <button class="btn-confirm" onclick="confirmSelection()">确定</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- 模态框 -->
     <div id="modalOverlay" class="modal-overlay" onclick="closeModal()">
@@ -1503,7 +1529,6 @@
         document.addEventListener('DOMContentLoaded', function() {
             initCharts();
             initQuickActions();
-            initExpandSelector();
         });
 
         // 初始化快捷功能滑动
@@ -1683,115 +1708,453 @@
             });
         }
 
-        // 初始化展开选择器
-        function initExpandSelector() {
-            // 为时间选择项添加点击事件
-            const timeItems = document.querySelectorAll('.selector-item');
-            timeItems.forEach(item => {
-                item.addEventListener('click', function() {
-                    // 移除所有active类
-                    timeItems.forEach(i => i.classList.remove('active'));
-                    // 为当前项添加active类
-                    this.classList.add('active');
-                    
-                    // 清空自定义日期输入
-                    const customDate = document.getElementById('customDate');
-                    if (this.dataset.time !== 'custom') {
-                        customDate.value = '';
+
+
+        // 打开展开选择器（新页面模式）
+        function openExpandSelector() {
+            // 创建新页面
+            const selectorPage = document.createElement('div');
+            selectorPage.id = 'selectorPage';
+            selectorPage.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: #f5f5f5;
+                z-index: 1001;
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+            `;
+
+            const selectorContent = `
+                <!-- 导航头 -->
+                <header class="mobile-nav-header">
+                    <div class="nav-left">
+                        <div class="nav-icon" onclick="closeSelectorPage()">
+                            <i class="fas fa-arrow-left"></i>
+                        </div>
+                    </div>
+                    <div style="position: absolute; left: 50%; transform: translateX(-50%); text-align: center;">
+                        <div class="menu-title">选择区域、游戏和时间</div>
+                        <div class="menu-subtitle">请选择您需要的区域、游戏和时间范围</div>
+                    </div>
+                    <div class="nav-right">
+                        <div class="nav-icon" onclick="confirmSelection()">
+                            <i class="fas fa-check"></i>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- 页面容器 -->
+                <div class="page-container">
+                    <div class="homepage-content">
+                        <!-- 区域选择 -->
+                        <div class="mobile-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <i class="fas fa-map-marker-alt" style="color: #1890ff;"></i>
+                                    区域选择
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div style="margin-bottom: 16px;">
+                                    <label style="display: block; margin-bottom: 4px; font-size: 14px; font-weight: 600; color: #262626;">选择类型</label>
+                                    <select class="selector-dropdown" id="regionTypeSelect" onchange="updateRegionOptions()">
+                                        <option value="管理机构">管理机构</option>
+                                        <option value="行政区划">行政区划</option>
+                                        <option value="管理员">管理员</option>
+                                    </select>
+                                </div>
+                                <div style="margin-bottom: 16px;">
+                                    <label style="display: block; margin-bottom: 4px; font-size: 14px; font-weight: 600; color: #262626;">具体选择</label>
+                                    <select class="selector-dropdown" id="regionDetailSelect">
+                                        <option value="区域销售一部">区域销售一部</option>
+                                        <option value="区域销售二部">区域销售二部</option>
+                                        <option value="区域销售三部">区域销售三部</option>
+                                        <option value="区域销售四部">区域销售四部</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 游戏选择 -->
+                        <div class="mobile-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <i class="fas fa-gamepad" style="color: #1890ff;"></i>
+                                    游戏选择
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div style="margin-bottom: 16px;">
+                                    <label style="display: block; margin-bottom: 4px; font-size: 14px; font-weight: 600; color: #262626;">选择游戏类型</label>
+                                    <select class="selector-dropdown" id="gameTypeSelect" onchange="selectGameFromDropdown()">
+                                        <option value="all">全部游戏</option>
+                                        <option value="双色球">双色球</option>
+                                        <option value="七乐彩">七乐彩</option>
+                                        <option value="3D">3D</option>
+                                        <option value="22选5">22选5</option>
+                                        <option value="快乐8">快乐8</option>
+                                        <option value="即开票">即开票</option>
+                                        <option value="排列三">排列三</option>
+                                        <option value="排列五">排列五</option>
+                                        <option value="大乐透">大乐透</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 日期选择 -->
+                        <div class="mobile-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <i class="fas fa-calendar-alt" style="color: #1890ff;"></i>
+                                    日期选择
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <!-- 快捷日期按钮 -->
+                                <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;">
+                                    <button class="btn btn-secondary" style="flex: 1; min-width: 80px; font-size: 12px;" onclick="setQuickDate('today')">今天</button>
+                                    <button class="btn btn-secondary" style="flex: 1; min-width: 80px; font-size: 12px;" onclick="setQuickDate('yesterday')">昨天</button>
+                                    <button class="btn btn-secondary" style="flex: 1; min-width: 80px; font-size: 12px;" onclick="setQuickDate('thisWeek')">本周</button>
+                                    <button class="btn btn-secondary" style="flex: 1; min-width: 80px; font-size: 12px;" onclick="setQuickDate('lastWeek')">上周</button>
+                                    <button class="btn btn-secondary" style="flex: 1; min-width: 80px; font-size: 12px;" onclick="setQuickDate('7days')">近7天</button>
+                                    <button class="btn btn-secondary" style="flex: 1; min-width: 80px; font-size: 12px;" onclick="setQuickDate('30days')">近30天</button>
+                                </div>
+                                <!-- 日期输入框 -->
+                                <div style="display: flex; gap: 12px; align-items: center;">
+                                    <input type="date" class="date-input" id="startDate" style="flex: 1;">
+                                    <span style="color: #8c8c8c; font-size: 14px;">至</span>
+                                    <input type="date" class="date-input" id="endDate" style="flex: 1;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            selectorPage.innerHTML = selectorContent;
+            document.body.appendChild(selectorPage);
+
+            // 显示页面
+            setTimeout(() => {
+                selectorPage.style.transform = 'translateX(0)';
+            }, 10);
+
+            // 重新初始化选择器事件
+            initSelectorEvents();
+        }
+
+        // 关闭选择器页面
+        function closeSelectorPage() {
+            const selectorPage = document.getElementById('selectorPage');
+            if (selectorPage) {
+                selectorPage.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    selectorPage.remove();
+                }, 300);
+            }
+        }
+
+        // 初始化选择器事件
+        function initSelectorEvents() {
+            // 初始化区域选择
+            updateRegionOptions();
+            
+            // 初始化游戏选择
+            window.selectedGameType = 'all';
+            const gameTypeSelect = document.getElementById('gameTypeSelect');
+            if (gameTypeSelect) {
+                gameTypeSelect.value = 'all';
+            }
+            
+            // 初始化日期输入框
+            const startDateInput = document.getElementById('startDate');
+            const endDateInput = document.getElementById('endDate');
+            
+            if (startDateInput && endDateInput) {
+                // 设置默认日期为今天
+                const today = new Date().toISOString().split('T')[0];
+                startDateInput.value = today;
+                endDateInput.value = today;
+                
+                // 为日期输入框添加验证
+                startDateInput.addEventListener('change', function() {
+                    if (this.value && endDateInput.value && this.value > endDateInput.value) {
+                        endDateInput.value = this.value;
+                        showToast('结束日期已自动调整为开始日期');
                     }
                 });
+                
+                endDateInput.addEventListener('change', function() {
+                    if (this.value && startDateInput.value && this.value < startDateInput.value) {
+                        startDateInput.value = this.value;
+                        showToast('开始日期已自动调整为结束日期');
+                    }
+                });
+            }
+        }
+
+        // 更新区域选择选项（全局函数）
+        function updateRegionOptions() {
+            const regionTypeSelect = document.getElementById('regionTypeSelect');
+            const regionDetailSelect = document.getElementById('regionDetailSelect');
+            
+            if (!regionTypeSelect || !regionDetailSelect) return;
+            
+            const selectedType = regionTypeSelect.value;
+            
+            // 清空现有选项
+            regionDetailSelect.innerHTML = '';
+            
+            // 定义各类型对应的选项
+            const regionOptions = {
+                '管理机构': [
+                    { value: '区域销售一部', text: '区域销售一部' },
+                    { value: '区域销售二部', text: '区域销售二部' },
+                    { value: '区域销售三部', text: '区域销售三部' },
+                    { value: '区域销售四部', text: '区域销售四部' },
+                    { value: '区域销售五部', text: '区域销售五部' }
+                ],
+                '行政区划': [
+                    { value: '北京市·朝阳区', text: '北京市·朝阳区' },
+                    { value: '北京市·海淀区', text: '北京市·海淀区' },
+                    { value: '北京市·昌平区', text: '北京市·昌平区' },
+                    { value: '北京市·丰台区', text: '北京市·丰台区' },
+                    { value: '北京市·西城区', text: '北京市·西城区' },
+                    { value: '北京市·东城区', text: '北京市·东城区' },
+                    { value: '北京市·大兴区', text: '北京市·大兴区' },
+                    { value: '北京市·通州区', text: '北京市·通州区' }
+                ],
+                '管理员': [
+                    { value: '张三', text: '张三（当前）' },
+                    { value: '李四', text: '李四' },
+                    { value: '王五', text: '王五' },
+                    { value: '赵六', text: '赵六' },
+                    { value: '陈七', text: '陈七' }
+                ]
+            };
+            
+            // 根据选择的类型添加对应选项
+            const options = regionOptions[selectedType] || [];
+            options.forEach(option => {
+                const optionElement = document.createElement('option');
+                optionElement.value = option.value;
+                optionElement.textContent = option.text;
+                regionDetailSelect.appendChild(optionElement);
             });
+        }
 
-            // 为自定义日期输入添加事件
-            const customDateInput = document.getElementById('customDate');
-            customDateInput.addEventListener('change', function() {
-                if (this.value) {
-                    // 移除所有时间选择项的active类
-                    timeItems.forEach(i => i.classList.remove('active'));
-                }
+        // 设置快捷日期选择（全局函数）
+        function setQuickDate(dateType) {
+            const startDateInput = document.getElementById('startDate');
+            const endDateInput = document.getElementById('endDate');
+            
+            if (!startDateInput || !endDateInput) return;
+            
+            const today = new Date();
+            const formatDate = (date) => {
+                return date.toISOString().split('T')[0];
+            };
+            
+            let startDate, endDate;
+            
+            switch (dateType) {
+                case 'today':
+                    startDate = endDate = today;
+                    break;
+                case 'yesterday':
+                    const yesterday = new Date(today);
+                    yesterday.setDate(yesterday.getDate() - 1);
+                    startDate = endDate = yesterday;
+                    break;
+                case 'thisWeek':
+                    const weekStart = new Date(today);
+                    weekStart.setDate(today.getDate() - today.getDay());
+                    startDate = weekStart;
+                    endDate = today;
+                    break;
+                case 'lastWeek':
+                    const lastWeekEnd = new Date(today);
+                    lastWeekEnd.setDate(today.getDate() - today.getDay() - 1);
+                    const lastWeekStart = new Date(lastWeekEnd);
+                    lastWeekStart.setDate(lastWeekEnd.getDate() - 6);
+                    startDate = lastWeekStart;
+                    endDate = lastWeekEnd;
+                    break;
+                case '7days':
+                    const sevenDaysAgo = new Date(today);
+                    sevenDaysAgo.setDate(today.getDate() - 7);
+                    startDate = sevenDaysAgo;
+                    endDate = today;
+                    break;
+                case '30days':
+                    const thirtyDaysAgo = new Date(today);
+                    thirtyDaysAgo.setDate(today.getDate() - 30);
+                    startDate = thirtyDaysAgo;
+                    endDate = today;
+                    break;
+                default:
+                    startDate = endDate = today;
+            }
+            
+            startDateInput.value = formatDate(startDate);
+            endDateInput.value = formatDate(endDate);
+            
+            // 显示设置成功提示
+            const dateLabels = {
+                'today': '今天',
+                'yesterday': '昨天', 
+                'thisWeek': '本周',
+                'lastWeek': '上周',
+                '7days': '近7天',
+                '30days': '近30天'
+            };
+            
+            showToast(`已设置为${dateLabels[dateType]}：${formatDate(startDate)} ~ ${formatDate(endDate)}`);
+        }
+
+        // 游戏选择函数（全局函数）
+        function selectGame(gameType) {
+            const selectorPage = document.getElementById('selectorPage');
+            if (!selectorPage) return;
+            
+            const gameItems = selectorPage.querySelectorAll('.selector-item');
+            const selectedGameDisplay = selectorPage.querySelector('#selectedGameDisplay');
+            
+            // 移除所有选中状态
+            gameItems.forEach(item => {
+                item.classList.remove('active');
             });
+            
+            // 设置当前选中状态
+            const selectedItem = Array.from(gameItems).find(item => 
+                item.textContent.includes(gameType === 'all' ? '全部游戏' : gameType)
+            );
+            
+            if (selectedItem) {
+                selectedItem.classList.add('active');
+            }
+            
+            // 更新显示
+            const displayText = gameType === 'all' ? '全部游戏' : gameType;
+            if (selectedGameDisplay) {
+                selectedGameDisplay.textContent = displayText;
+            }
+            
+            // 存储选择的游戏类型
+            window.selectedGameType = gameType;
+            
+            // 显示提示
+            showToast(`已选择游戏类型：${displayText}`);
         }
 
-        // 打开展开选择器
-        function openExpandSelector() {
-            const expandSelector = document.getElementById('expandSelector');
+        // 下拉选择器游戏选择函数（全局函数）
+        function selectGameFromDropdown() {
+            const selectorPage = document.getElementById('selectorPage');
+            if (!selectorPage) return;
             
-            // 动态计算导航头高度，调整遮罩层位置
-            const navHeader = document.querySelector('.mobile-nav-header');
-            const navHeight = navHeader ? navHeader.offsetHeight : 68;
+            const gameTypeSelect = selectorPage.querySelector('#gameTypeSelect');
+            if (!gameTypeSelect) return;
             
-            // 设置遮罩层从导航头下方开始
-            expandSelector.style.top = navHeight + 'px';
-            expandSelector.style.height = `calc(100% - ${navHeight}px)`;
+            const selectedGameType = gameTypeSelect.value;
+            const displayText = selectedGameType === 'all' ? '全部游戏' : selectedGameType;
             
-            expandSelector.classList.add('active');
+            // 存储选择的游戏类型
+            window.selectedGameType = selectedGameType;
+            
+            // 显示提示
+            showToast(`已选择游戏类型：${displayText}`);
         }
 
-        // 关闭展开选择器
-        function closeExpandSelector() {
-            const expandSelector = document.getElementById('expandSelector');
-            expandSelector.classList.remove('active');
-        }
+
 
         // 确认选择
         function confirmSelection() {
-            const orgSelect = document.getElementById('orgSelect');
-            const citySelect = document.getElementById('citySelect');
-            const adminSelect = document.getElementById('adminSelect');
-            const customDate = document.getElementById('customDate');
+            const selectorPage = document.getElementById('selectorPage');
+            if (!selectorPage) {
+                return;
+            }
             
-            // 获取选中的时间选择项
-            const activeTimeItem = document.querySelector('.selector-item.active');
+            const regionTypeSelect = selectorPage.querySelector('#regionTypeSelect');
+            const regionDetailSelect = selectorPage.querySelector('#regionDetailSelect');
+            const startDateInput = selectorPage.querySelector('#startDate');
+            const endDateInput = selectorPage.querySelector('#endDate');
+            
+            // 获取日期范围
+            const startDate = startDateInput.value;
+            const endDate = endDateInput.value;
+            
+            if (!startDate || !endDate) {
+                showToast('请选择开始日期和结束日期');
+                return;
+            }
+            
+            if (startDate > endDate) {
+                showToast('开始日期不能大于结束日期');
+                return;
+            }
+            
+            // 获取游戏选择信息
+            const gameTypeSelect = selectorPage.querySelector('#gameTypeSelect');
+            const selectedGameType = gameTypeSelect ? gameTypeSelect.value : 'all';
+            const gameDisplayText = selectedGameType === 'all' ? '全部游戏' : selectedGameType;
+            
+            // 更新全局变量
+            window.selectedGameType = selectedGameType;
+            
+            // 生成时间标签和时间范围
             let timeLabel = '';
             let timeRange = '';
             
-            if (activeTimeItem) {
-                timeLabel = activeTimeItem.textContent;
-                // 根据选择的时间类型生成日期范围
-                const today = new Date();
-                const formatDate = (date) => {
-                    return date.toISOString().split('T')[0];
-                };
-                
-                switch (activeTimeItem.dataset.time) {
-                    case 'today':
-                        timeRange = formatDate(today);
-                        break;
-                    case 'yesterday':
-                        const yesterday = new Date(today);
-                        yesterday.setDate(yesterday.getDate() - 1);
-                        timeRange = formatDate(yesterday);
-                        break;
-                    case 'thisWeek':
-                        const weekStart = new Date(today);
-                        weekStart.setDate(today.getDate() - today.getDay());
-                        timeRange = `${formatDate(weekStart)} ~ ${formatDate(today)}`;
-                        break;
-                    case 'lastWeek':
-                        const lastWeekEnd = new Date(today);
-                        lastWeekEnd.setDate(today.getDate() - today.getDay() - 1);
-                        const lastWeekStart = new Date(lastWeekEnd);
-                        lastWeekStart.setDate(lastWeekEnd.getDate() - 6);
-                        timeRange = `${formatDate(lastWeekStart)} ~ ${formatDate(lastWeekEnd)}`;
-                        break;
-                    case '7days':
-                        const sevenDaysAgo = new Date(today);
-                        sevenDaysAgo.setDate(today.getDate() - 7);
-                        timeRange = `${formatDate(sevenDaysAgo)} ~ ${formatDate(today)}`;
-                        break;
-                    case '30days':
-                        const thirtyDaysAgo = new Date(today);
-                        thirtyDaysAgo.setDate(today.getDate() - 30);
-                        timeRange = `${formatDate(thirtyDaysAgo)} ~ ${formatDate(today)}`;
-                        break;
-                }
-            } else if (customDate.value) {
-                timeLabel = '自定义';
-                timeRange = customDate.value;
+            if (startDate === endDate) {
+                // 同一天
+                timeLabel = startDate === new Date().toISOString().split('T')[0] ? '今天' : '单日';
+                timeRange = startDate;
             } else {
-                // 如果没有选择任何时间，默认使用今天
-                timeLabel = '今天';
-                timeRange = new Date().toISOString().split('T')[0];
+                // 日期范围
+                const daysDiff = Math.ceil((new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24));
+                if (daysDiff <= 7) {
+                    timeLabel = `${daysDiff + 1}天`;
+                } else if (daysDiff <= 30) {
+                    timeLabel = `${daysDiff + 1}天`;
+                } else {
+                    timeLabel = '自定义范围';
+                }
+                timeRange = `${startDate} ~ ${endDate}`;
+            }
+            
+            // 获取区域选择信息
+            const regionType = regionTypeSelect.value;
+            const regionDetail = regionDetailSelect.value;
+            
+            // 根据区域类型生成显示内容
+            let displayTitle = '';
+            let displaySubtitle = '';
+            
+            // 添加游戏信息到显示内容（始终显示游戏信息）
+            const gameInfo = ` · ${gameDisplayText}`;
+            
+            switch (regionType) {
+                case '管理机构':
+                    displayTitle = `${regionDetail}${gameInfo} · ${timeLabel}`;
+                    displaySubtitle = `${regionDetail}${gameInfo} · ${timeRange}`;
+                    break;
+                case '行政区划':
+                    displayTitle = `${regionDetail}${gameInfo} · ${timeLabel}`;
+                    displaySubtitle = `${regionDetail}${gameInfo} · ${timeRange}`;
+                    break;
+                case '管理员':
+                    displayTitle = `${regionDetail}${gameInfo} · ${timeLabel}`;
+                    displaySubtitle = `管理员：${regionDetail}${gameInfo} · ${timeRange}`;
+                    break;
+                default:
+                    displayTitle = `${regionDetail}${gameInfo} · ${timeLabel}`;
+                    displaySubtitle = `${regionDetail}${gameInfo} · ${timeRange}`;
             }
             
             // 更新所有导航头显示
@@ -1799,22 +2162,43 @@
             const menuSubtitles = document.querySelectorAll('.menu-subtitle');
             
             menuTitles.forEach(title => {
-                if (title.textContent.includes('游戏销量详情')) {
-                    title.textContent = `游戏销量详情 · ${timeLabel}`;
+                if (title.textContent.includes('游戏销量占比详情')) {
+                    title.textContent = '游戏销量占比详情';
+                } else if (title.textContent.includes('选择区域、游戏和时间')) {
+                    // 跳过选择器页面的标题
+                    return;
+                } else if (title.textContent.includes('销量查询')) {
+                    // 跳过销量查询页面的标题
+                    return;
+                } else if (title.textContent.includes('开机率查询')) {
+                    // 跳过开机率查询页面的标题
+                    return;
                 } else {
-                    title.textContent = `${orgSelect.value} · ${timeLabel}`;
+                    title.textContent = displayTitle;
                 }
             });
             
             menuSubtitles.forEach(subtitle => {
-                subtitle.textContent = `${citySelect.value} · ${timeRange}`;
+                if (subtitle.textContent.includes('请选择您需要的区域、游戏和时间范围')) {
+                    // 跳过选择器页面的副标题
+                    return;
+                } else if (subtitle.textContent.includes('区域销量统计与分析')) {
+                    // 跳过销量查询页面的副标题
+                    return;
+                } else if (subtitle.textContent.includes('近7日开机情况统计')) {
+                    // 跳过开机率查询页面的副标题
+                    return;
+                } else {
+                    subtitle.textContent = displaySubtitle;
+                }
             });
             
             // 显示成功提示
-            showToast(`已更新：${orgSelect.value} · ${timeLabel}`);
+            const gameText = ` · ${gameDisplayText}`;
+            showToast(`已更新：${regionType} - ${regionDetail}${gameText} · ${timeRange}`);
             
-            // 关闭选择器
-            closeExpandSelector();
+            // 关闭选择器页面
+            closeSelectorPage();
         }
 
         // 初始化图表
@@ -1826,14 +2210,14 @@
                 data: {
                     labels: ['7点', '8点', '9点', '10点', '11点', '12点', '13点', '14点', '15点', '16点', '17点', '18点', '19点', '20点', '21点', '22点', '23点', '24点'],
                     datasets: [{
-                        label: '今日销量',
+                        label: '今日',
                         data: [2.5, 3.2, 4.1, 5.8, 7.2, 8.5, 9.1, 10.2, 11.8, 13.5, 15.2, 18.6, 22.3, 25.1, 28.7, 32.4, 29.8, 26.5],
                         borderColor: '#1890ff',
                         backgroundColor: 'rgba(24, 144, 255, 0.1)',
                         tension: 0.4,
                         fill: true
                     }, {
-                        label: '昨日销量',
+                        label: '昨日',
                         data: [2.1, 2.8, 3.5, 5.2, 6.8, 8.1, 8.7, 9.6, 11.2, 12.8, 14.5, 17.2, 20.8, 23.5, 27.1, 30.8, 28.2, 25.1],
                         borderColor: '#52c41a',
                         backgroundColor: 'rgba(82, 196, 26, 0.1)',
@@ -1857,7 +2241,8 @@
                     },
                     plugins: {
                         legend: {
-                            position: 'top',
+                            position: 'bottom',
+                            align: 'center',
                             labels: {
                                 usePointStyle: true,
                                 padding: 20
@@ -1894,14 +2279,28 @@
                             position: 'bottom',
                             labels: {
                                 usePointStyle: true,
-                                padding: 15
+                                padding: 15,
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((value / total) * 100).toFixed(1);
+                                    return `${label}: ${value}万 (${percentage}%)`;
+                                }
                             }
                         }
                     }
                 }
             });
 
-            // 热门玩法使用网格布局，无需初始化图表
+            // 热线玩法分布使用网格布局，无需初始化图表
 
             // 票单分布柱状图
             const distributionCtx = document.getElementById('distributionChart').getContext('2d');
@@ -1938,7 +2337,7 @@
                 }
             });
 
-            // 区县销量柱状图
+            // 区县销量柱状图（水平条形图）
             const districtCtx = document.getElementById('districtChart').getContext('2d');
             charts.district = new Chart(districtCtx, {
                 type: 'bar',
@@ -1962,17 +2361,25 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    indexAxis: 'y',
                     plugins: {
                         legend: {
                             display: false
                         }
                     },
                     scales: {
-                        y: {
+                        x: {
                             beginAtZero: true,
                             ticks: {
                                 callback: function(value) {
                                     return value + '万';
+                                }
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                font: {
+                                    size: 12
                                 }
                             }
                         }
@@ -1994,18 +2401,21 @@
                 
                 // 更新图表数据为时间销量数据
                 charts.trend.data.labels = ['7点', '8点', '9点', '10点', '11点', '12点', '13点', '14点', '15点', '16点', '17点', '18点', '19点', '20点', '21点', '22点', '23点', '24点'];
-                charts.trend.data.datasets[0].label = '今日销量';
+                charts.trend.data.datasets[0].label = '今日';
                 charts.trend.data.datasets[0].data = [2.5, 3.2, 4.1, 5.8, 7.2, 8.5, 9.1, 10.2, 11.8, 13.5, 15.2, 18.6, 22.3, 25.1, 28.7, 32.4, 29.8, 26.5];
-                charts.trend.data.datasets[1].label = '昨日销量';
+                charts.trend.data.datasets[1].label = '昨日';
                 charts.trend.data.datasets[1].data = [2.1, 2.8, 3.5, 5.2, 6.8, 8.1, 8.7, 9.6, 11.2, 12.8, 14.5, 17.2, 20.8, 23.5, 27.1, 30.8, 28.2, 25.1];
                 
                 // 更新Y轴单位为万
                 charts.trend.options.scales.y.ticks.callback = function(value) {
                     return value + '万';
                 };
+                // 确保图例位置在底部居中
+                charts.trend.options.plugins.legend.position = 'bottom';
+                charts.trend.options.plugins.legend.align = 'center';
                 charts.trend.update();
                 
-                showToast('已切换到销量模式 - 显示时间销量');
+                showToast('已切换到销量模式');
             } else {
                 salesBtn.className = 'btn btn-secondary';
                 machineBtn.className = 'btn btn-primary';
@@ -2013,22 +2423,23 @@
                 
                 // 更新图表数据为时间开机数据
                 charts.trend.data.labels = ['7点', '8点', '9点', '10点', '11点', '12点', '13点', '14点', '15点', '16点', '17点', '18点', '19点', '20点', '21点', '22点', '23点', '24点'];
-                charts.trend.data.datasets[0].label = '今日开机';
+                charts.trend.data.datasets[0].label = '今日';
                 charts.trend.data.datasets[0].data = [1250, 1380, 1420, 1450, 1480, 1520, 1550, 1580, 1600, 1620, 1650, 1680, 1720, 1750, 1780, 1800, 1780, 1760];
-                charts.trend.data.datasets[1].label = '昨日开机';
+                charts.trend.data.datasets[1].label = '昨日';
                 charts.trend.data.datasets[1].data = [1200, 1330, 1370, 1400, 1430, 1470, 1500, 1530, 1550, 1570, 1600, 1630, 1670, 1700, 1730, 1750, 1730, 1710];
                 
                 // 更新Y轴单位为台
                 charts.trend.options.scales.y.ticks.callback = function(value) {
                     return value + '台';
                 };
+                // 确保图例位置在底部居中
+                charts.trend.options.plugins.legend.position = 'bottom';
+                charts.trend.options.plugins.legend.align = 'center';
                 charts.trend.update();
                 
-                showToast('已切换到开机模式 - 显示时间开机数');
+                showToast('已切换到开机模式');
             }
         }
-
-
 
         // 显示Toast消息
         function showToast(message) {
@@ -2204,6 +2615,8 @@
                 z-index: 1001;
                 transform: translateX(100%);
                 transition: transform 0.3s ease;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
             `;
 
             const gameDetailContent = `
@@ -2213,28 +2626,27 @@
                         <div class="nav-icon" onclick="closeGameDetailPage()">
                             <i class="fas fa-arrow-left"></i>
                         </div>
-                        <div class="hamburger-menu" onclick="openExpandSelector()" style="margin-left: 8px;">
-                            <div class="menu-info">
-                                <div class="menu-title">游戏销量详情 · 今天</div>
-                                <div class="menu-subtitle">北京市 · 朝阳区 · 2024-12-20</div>
-                            </div>
-                            <i class="fas fa-chevron-down" style="font-size: 12px; margin-left: 4px;"></i>
-                        </div>
+                    </div>
+                    <div style="position: absolute; left: 50%; transform: translateX(-50%); text-align: center;">
+                        <div class="menu-title">游戏销量占比详情</div>
+                        <div class="menu-subtitle">区域销售一部 · 2024-12-20</div>
                     </div>
                     <div class="nav-right">
-                        <div class="nav-icon" onclick="showToast('导出数据')">
-                            <i class="fas fa-download"></i>
+                        <div class="nav-icon" onclick="openExpandSelector()">
+                            <i class="fas fa-calendar-alt"></i>
                         </div>
                     </div>
                 </header>
 
-                <!-- 游戏列表 -->
-                <div class="homepage-content" style="padding-top: 16px;">
+                <!-- 页面容器 -->
+                <div class="page-container">
+                    <!-- 游戏列表 -->
+                    <div class="homepage-content">
                     <div class="mobile-card">
                         <div class="card-header">
                             <div class="card-title">
                                 <i class="fas fa-list" style="color: #1890ff;"></i>
-                                游戏销量排行
+                                                                    游戏销量占比排行
                             </div>
                         </div>
                         <div class="card-content">
@@ -2254,7 +2666,7 @@
                                                 <span style="font-weight: 600;">双色球</span>
                                             </div>
                                         </td>
-                                        <td><span class="sales-amount">¥35万</span></td>
+                                        <td><span class="sales-amount">35万</span></td>
                                         <td>28.2%</td>
                                     </tr>
                                     <tr>
@@ -2264,7 +2676,7 @@
                                                 <span style="font-weight: 600;">22选5</span>
                                             </div>
                                         </td>
-                                        <td><span class="sales-amount">¥30万</span></td>
+                                        <td><span class="sales-amount">30万</span></td>
                                         <td>24.2%</td>
                                     </tr>
                                     <tr>
@@ -2274,7 +2686,7 @@
                                                 <span style="font-weight: 600;">3D</span>
                                             </div>
                                         </td>
-                                        <td><span class="sales-amount">¥25万</span></td>
+                                        <td><span class="sales-amount">25万</span></td>
                                         <td>20.2%</td>
                                     </tr>
                                     <tr>
@@ -2284,7 +2696,7 @@
                                                 <span style="font-weight: 600;">七乐彩</span>
                                             </div>
                                         </td>
-                                        <td><span class="sales-amount">¥18万</span></td>
+                                        <td><span class="sales-amount">18万</span></td>
                                         <td>14.5%</td>
                                     </tr>
                                     <tr>
@@ -2294,7 +2706,7 @@
                                                 <span style="font-weight: 600;">快乐8</span>
                                             </div>
                                         </td>
-                                        <td><span class="sales-amount">¥10万</span></td>
+                                        <td><span class="sales-amount">10万</span></td>
                                         <td>8.1%</td>
                                     </tr>
                                     <tr>
@@ -2304,7 +2716,7 @@
                                                 <span style="font-weight: 600;">即开票</span>
                                             </div>
                                         </td>
-                                        <td><span class="sales-amount">¥6万</span></td>
+                                        <td><span class="sales-amount">6万</span></td>
                                         <td>4.8%</td>
                                     </tr>
                                 </tbody>
@@ -2312,6 +2724,7 @@
                         </div>
                     </div>
                 </div>
+                <!-- 页面容器结束 -->
             `;
 
             gameDetailPage.innerHTML = gameDetailContent;
@@ -2330,6 +2743,1325 @@
                 gameDetailPage.style.transform = 'translateX(100%)';
                 setTimeout(() => {
                     gameDetailPage.remove();
+                }, 300);
+            }
+        }
+
+        // 打开销量查询页面
+        function openSalesQueryPage() {
+            // 创建新页面
+            const salesQueryPage = document.createElement('div');
+            salesQueryPage.id = 'salesQueryPage';
+            salesQueryPage.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: #f5f5f5;
+                z-index: 1001;
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+            `;
+
+            const salesQueryContent = `
+                <!-- 导航头 -->
+                <header class="mobile-nav-header">
+                    <div class="nav-left">
+                        <div class="nav-icon" onclick="closeSalesQueryPage()">
+                            <i class="fas fa-arrow-left"></i>
+                        </div>
+                    </div>
+                    <div style="position: absolute; left: 50%; transform: translateX(-50%); text-align: center;">
+                        <div class="menu-title">销量查询</div>
+                        <div class="menu-subtitle">区域销量统计与分析</div>
+                    </div>
+                    <div class="nav-right">
+                        <div class="nav-icon" onclick="openExpandSelector()">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- 页面容器 -->
+                <div class="page-container">
+                    <div class="homepage-content">
+                        <!-- 销量柱状图 -->
+                        <div class="mobile-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <i class="fas fa-chart-bar" style="color: #1890ff;"></i>
+                                    销量分布图
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div class="chart-container">
+                                    <canvas id="salesQueryChart" class="chart-canvas"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 销量数据表格 -->
+                        <div class="mobile-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <i class="fas fa-table" style="color: #1890ff;"></i>
+                                    销量详情
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <table class="ranking-table">
+                                    <thead>
+                                        <tr>
+                                            <th>管理机构</th>
+                                            <th>销量</th>
+                                            <th>销量占比</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>区域销售一部</td>
+                                            <td><span class="sales-amount">45万</span></td>
+                                            <td>36.3%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>区域销售二部</td>
+                                            <td><span class="sales-amount">38万</span></td>
+                                            <td>30.6%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>区域销售三部</td>
+                                            <td><span class="sales-amount">25万</span></td>
+                                            <td>20.2%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>区域销售四部</td>
+                                            <td><span class="sales-amount">16万</span></td>
+                                            <td>12.9%</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            salesQueryPage.innerHTML = salesQueryContent;
+            document.body.appendChild(salesQueryPage);
+
+            // 显示页面
+            setTimeout(() => {
+                salesQueryPage.style.transform = 'translateX(0)';
+                // 初始化图表
+                initSalesQueryChart();
+            }, 10);
+        }
+
+        // 关闭销量查询页面
+        function closeSalesQueryPage() {
+            const salesQueryPage = document.getElementById('salesQueryPage');
+            if (salesQueryPage) {
+                salesQueryPage.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    salesQueryPage.remove();
+                }, 300);
+            }
+        }
+
+        // 初始化销量查询图表
+        function initSalesQueryChart() {
+            const ctx = document.getElementById('salesQueryChart');
+            if (ctx) {
+                new Chart(ctx.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['区域销售一部', '区域销售二部', '区域销售三部', '区域销售四部'],
+                        datasets: [{
+                            label: '销量',
+                            data: [45, 38, 25, 16],
+                            backgroundColor: [
+                                '#1890ff',
+                                '#52c41a',
+                                '#faad14',
+                                '#f5222d'
+                            ],
+                            borderRadius: 6,
+                            borderSkipped: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + '万';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // 打开开机率页面
+        function openMachineStatusPage() {
+            // 创建新页面
+            const machineStatusPage = document.createElement('div');
+            machineStatusPage.id = 'machineStatusPage';
+            machineStatusPage.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: #f5f5f5;
+                z-index: 1001;
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+            `;
+
+            const machineStatusContent = `
+                <!-- 导航头 -->
+                <header class="mobile-nav-header">
+                    <div class="nav-left">
+                        <div class="nav-icon" onclick="closeMachineStatusPage()">
+                            <i class="fas fa-arrow-left"></i>
+                        </div>
+                    </div>
+                    <div style="position: absolute; left: 50%; transform: translateX(-50%); text-align: center;">
+                        <div class="menu-title">开机率查询</div>
+                        <div class="menu-subtitle">近7日开机情况统计</div>
+                    </div>
+                    <div class="nav-right">
+                        <div class="nav-icon" onclick="openExpandSelector()">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- 页面容器 -->
+                <div class="page-container">
+                    <div class="homepage-content">
+                        <!-- 近7日开机走势图 -->
+                        <div class="mobile-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <i class="fas fa-chart-line" style="color: #1890ff;"></i>
+                                    近7日开机走势
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div class="chart-container">
+                                    <canvas id="machineStatusChart" class="chart-canvas"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 开机率数据表格 -->
+                        <div class="mobile-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <i class="fas fa-table" style="color: #1890ff;"></i>
+                                    开机率详情
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <table class="ranking-table">
+                                    <thead>
+                                        <tr>
+                                            <th>日期</th>
+                                            <th>开机数量</th>
+                                            <th>开机率</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>2024-12-20</td>
+                                            <td>1,789台</td>
+                                            <td style="color: #52c41a; font-weight: 600;">98.7%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>2024-12-19</td>
+                                            <td>1,795台</td>
+                                            <td style="color: #52c41a; font-weight: 600;">99.0%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>2024-12-18</td>
+                                            <td>1,782台</td>
+                                            <td style="color: #52c41a; font-weight: 600;">98.3%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>2024-12-17</td>
+                                            <td>1,768台</td>
+                                            <td style="color: #faad14; font-weight: 600;">97.5%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>2024-12-16</td>
+                                            <td>1,805台</td>
+                                            <td style="color: #52c41a; font-weight: 600;">99.5%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>2024-12-15</td>
+                                            <td>1,723台</td>
+                                            <td style="color: #f5222d; font-weight: 600;">95.0%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>2024-12-14</td>
+                                            <td>1,788台</td>
+                                            <td style="color: #52c41a; font-weight: 600;">98.6%</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            machineStatusPage.innerHTML = machineStatusContent;
+            document.body.appendChild(machineStatusPage);
+
+            // 显示页面
+            setTimeout(() => {
+                machineStatusPage.style.transform = 'translateX(0)';
+                // 初始化图表
+                initMachineStatusChart();
+            }, 10);
+        }
+
+        // 关闭开机率页面
+        function closeMachineStatusPage() {
+            const machineStatusPage = document.getElementById('machineStatusPage');
+            if (machineStatusPage) {
+                machineStatusPage.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    machineStatusPage.remove();
+                }, 300);
+            }
+        }
+
+        // 初始化开机率图表
+        function initMachineStatusChart() {
+            const ctx = document.getElementById('machineStatusChart');
+            if (ctx) {
+                new Chart(ctx.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: ['12-14', '12-15', '12-16', '12-17', '12-18', '12-19', '12-20'],
+                        datasets: [{
+                            label: '开机率',
+                            data: [98.6, 95.0, 99.5, 97.5, 98.3, 99.0, 98.7],
+                            borderColor: '#1890ff',
+                            backgroundColor: 'rgba(24, 144, 255, 0.1)',
+                            tension: 0.4,
+                            fill: true,
+                            pointBackgroundColor: '#1890ff',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2,
+                            pointRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                min: 90,
+                                max: 100,
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + '%';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // 打开玩法详情页面
+        function openGameplayDetailPage() {
+            // 创建新页面
+            const gameplayDetailPage = document.createElement('div');
+            gameplayDetailPage.id = 'gameplayDetailPage';
+            gameplayDetailPage.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: #f5f5f5;
+                z-index: 1001;
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+            `;
+
+            const gameplayDetailContent = `
+                <!-- 导航头 -->
+                <header class="mobile-nav-header">
+                    <div class="nav-left">
+                        <div class="nav-icon" onclick="closeGameplayDetailPage()">
+                            <i class="fas fa-arrow-left"></i>
+                        </div>
+                    </div>
+                    <div style="position: absolute; left: 50%; transform: translateX(-50%); text-align: center;">
+                        <div class="menu-title">玩法详情</div>
+                        <div class="menu-subtitle">热线玩法分布统计</div>
+                    </div>
+                    <div class="nav-right">
+                        <div class="nav-icon" onclick="openExpandSelector()">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- 页面容器 -->
+                <div class="page-container">
+                    <div class="homepage-content">
+                        <!-- 玩法排行榜 -->
+                        <div class="mobile-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <i class="fas fa-trophy" style="color: #faad14;"></i>
+                                    玩法销量排行
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <table class="ranking-table">
+                                    <thead>
+                                        <tr>
+                                            <th>排名</th>
+                                            <th>玩法名称</th>
+                                            <th>销量</th>
+                                            <th>占比</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <div class="rank-cell">
+                                                    <i class="fas fa-trophy rank-icon rank-1"></i>
+                                                    <span>1</span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 8px;">
+                                                    <div style="width: 12px; height: 12px; background: #52c41a; border-radius: 50%;"></div>
+                                                    <span style="font-weight: 600;">双色球</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="sales-amount">35.2万</span></td>
+                                            <td>27.3%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="rank-cell">
+                                                    <i class="fas fa-trophy rank-icon rank-2"></i>
+                                                    <span>2</span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 8px;">
+                                                    <div style="width: 12px; height: 12px; background: #4A90E2; border-radius: 50%;"></div>
+                                                    <span style="font-weight: 600;">快乐8第三星式</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="sales-amount">28.5万</span></td>
+                                            <td>22.1%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="rank-cell">
+                                                    <i class="fas fa-trophy rank-icon rank-3"></i>
+                                                    <span>3</span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 8px;">
+                                                    <div style="width: 12px; height: 12px; background: #531dab; border-radius: 50%;"></div>
+                                                    <span style="font-weight: 600;">3D</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="sales-amount">25.8万</span></td>
+                                            <td>20.1%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="rank-cell">
+                                                    <span>4</span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 8px;">
+                                                    <div style="width: 12px; height: 12px; background: #389e0d; border-radius: 50%;"></div>
+                                                    <span style="font-weight: 600;">22选5</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="sales-amount">22.1万</span></td>
+                                            <td>17.2%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="rank-cell">
+                                                    <span>5</span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 8px;">
+                                                    <div style="width: 12px; height: 12px; background: #722ed1; border-radius: 50%;"></div>
+                                                    <span style="font-weight: 600;">七乐彩</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="sales-amount">18.7万</span></td>
+                                            <td>14.5%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="rank-cell">
+                                                    <span>6</span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 8px;">
+                                                    <div style="width: 12px; height: 12px; background: #13c2c2; border-radius: 50%;"></div>
+                                                    <span style="font-weight: 600;">快乐8</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="sales-amount">15.3万</span></td>
+                                            <td>11.9%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="rank-cell">
+                                                    <span>7</span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 8px;">
+                                                    <div style="width: 12px; height: 12px; background: #eb2f96; border-radius: 50%;"></div>
+                                                    <span style="font-weight: 600;">快三玩法</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="sales-amount">12.6万</span></td>
+                                            <td>9.8%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="rank-cell">
+                                                    <span>8</span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 8px;">
+                                                    <div style="width: 12px; height: 12px; background: #389e0d; border-radius: 50%;"></div>
+                                                    <span style="font-weight: 600;">排列五</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="sales-amount">11.6万</span></td>
+                                            <td>9.0%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="rank-cell">
+                                                    <span>9</span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 8px;">
+                                                    <div style="width: 12px; height: 12px; background: #13c2c2; border-radius: 50%;"></div>
+                                                    <span style="font-weight: 600;">排列三</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="sales-amount">9.3万</span></td>
+                                            <td>7.2%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="rank-cell">
+                                                    <span>10</span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 8px;">
+                                                    <div style="width: 12px; height: 12px; background: #1890ff; border-radius: 50%;"></div>
+                                                    <span style="font-weight: 600;">快乐8选三</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="sales-amount">8.5万</span></td>
+                                            <td>6.6%</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            gameplayDetailPage.innerHTML = gameplayDetailContent;
+            document.body.appendChild(gameplayDetailPage);
+
+            // 显示页面
+            setTimeout(() => {
+                gameplayDetailPage.style.transform = 'translateX(0)';
+            }, 10);
+        }
+
+        // 关闭玩法详情页面
+        function closeGameplayDetailPage() {
+            const gameplayDetailPage = document.getElementById('gameplayDetailPage');
+            if (gameplayDetailPage) {
+                gameplayDetailPage.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    gameplayDetailPage.remove();
+                }, 300);
+            }
+        }
+
+        // 打开单票区间详情页面
+        function openTicketIntervalDetailPage() {
+            // 创建新页面
+            const ticketIntervalDetailPage = document.createElement('div');
+            ticketIntervalDetailPage.id = 'ticketIntervalDetailPage';
+            ticketIntervalDetailPage.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: #f5f5f5;
+                z-index: 1001;
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+            `;
+
+            const ticketIntervalDetailContent = `
+                <!-- 导航头 -->
+                <header class="mobile-nav-header">
+                    <div class="nav-left">
+                        <div class="nav-icon" onclick="closeTicketIntervalDetailPage()">
+                            <i class="fas fa-arrow-left"></i>
+                        </div>
+                    </div>
+                    <div style="position: absolute; left: 50%; transform: translateX(-50%); text-align: center;">
+                        <div class="menu-title">单票区间分布</div>
+                        <div class="menu-subtitle">区间统计详情</div>
+                    </div>
+                    <div class="nav-right">
+                        <div class="nav-icon" onclick="openExpandSelector()">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- 页面容器 -->
+                <div class="page-container">
+                    <div class="homepage-content">
+                        <!-- 区间分布列表 -->
+                        <div class="mobile-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <i class="fas fa-chart-bar" style="color: #52c41a;"></i>
+                                    单票区间统计
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <table class="ranking-table">
+                                    <thead>
+                                        <tr>
+                                            <th>区间</th>
+                                            <th>票数量</th>
+                                            <th>占比</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 8px;">
+                                                    <div style="width: 12px; height: 12px; background: #1890ff; border-radius: 50%;"></div>
+                                                    <span style="font-weight: 600;">0-10元</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="sales-amount">15,832</span></td>
+                                            <td>32.6%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 8px;">
+                                                    <div style="width: 12px; height: 12px; background: #52c41a; border-radius: 50%;"></div>
+                                                    <span style="font-weight: 600;">10-20元</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="sales-amount">12,456</span></td>
+                                            <td>25.7%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 8px;">
+                                                    <div style="width: 12px; height: 12px; background: #faad14; border-radius: 50%;"></div>
+                                                    <span style="font-weight: 600;">20-50元</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="sales-amount">9,234</span></td>
+                                            <td>19.0%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 8px;">
+                                                    <div style="width: 12px; height: 12px; background: #f5222d; border-radius: 50%;"></div>
+                                                    <span style="font-weight: 600;">50-100元</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="sales-amount">6,789</span></td>
+                                            <td>14.0%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 8px;">
+                                                    <div style="width: 12px; height: 12px; background: #722ed1; border-radius: 50%;"></div>
+                                                    <span style="font-weight: 600;">100-200元</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="sales-amount">2,567</span></td>
+                                            <td>5.3%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 8px;">
+                                                    <div style="width: 12px; height: 12px; background: #eb2f96; border-radius: 50%;"></div>
+                                                    <span style="font-weight: 600;">200-500元</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="sales-amount">1,234</span></td>
+                                            <td>2.5%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 8px;">
+                                                    <div style="width: 12px; height: 12px; background: #13c2c2; border-radius: 50%;"></div>
+                                                    <span style="font-weight: 600;">500元以上</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="sales-amount">456</span></td>
+                                            <td>0.9%</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- 统计汇总 -->
+                        <div class="mobile-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <i class="fas fa-calculator" style="color: #1890ff;"></i>
+                                    统计汇总
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div class="kpi-grid">
+                                    <div class="kpi-item">
+                                        <div class="kpi-value">48,568</div>
+                                        <div class="kpi-label">总票数</div>
+                                    </div>
+                                    <div class="kpi-item">
+                                        <div class="kpi-value">35.8元</div>
+                                        <div class="kpi-label">平均票额</div>
+                                    </div>
+                                    <div class="kpi-item">
+                                        <div class="kpi-value">15,832</div>
+                                        <div class="kpi-label">最高区间票数</div>
+                                    </div>
+                                    <div class="kpi-item">
+                                        <div class="kpi-value">32.6%</div>
+                                        <div class="kpi-label">最高占比</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            ticketIntervalDetailPage.innerHTML = ticketIntervalDetailContent;
+            document.body.appendChild(ticketIntervalDetailPage);
+
+            // 显示动画
+            setTimeout(() => {
+                ticketIntervalDetailPage.style.transform = 'translateX(0)';
+            }, 10);
+        }
+
+        // 关闭单票区间详情页面
+        function closeTicketIntervalDetailPage() {
+            const ticketIntervalDetailPage = document.getElementById('ticketIntervalDetailPage');
+            if (ticketIntervalDetailPage) {
+                ticketIntervalDetailPage.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    ticketIntervalDetailPage.remove();
+                }, 300);
+            }
+        }
+
+        // 打开区县销量详情页面
+        function openDistrictSalesDetailPage() {
+            // 创建新页面
+            const districtSalesDetailPage = document.createElement('div');
+            districtSalesDetailPage.id = 'districtSalesDetailPage';
+            districtSalesDetailPage.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: #f5f5f5;
+                z-index: 1001;
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+            `;
+
+            const districtSalesDetailContent = `
+                <!-- 导航头 -->
+                <header class="mobile-nav-header">
+                    <div class="nav-left">
+                        <div class="nav-icon" onclick="closeDistrictSalesDetailPage()">
+                            <i class="fas fa-arrow-left"></i>
+                        </div>
+                    </div>
+                    <div style="position: absolute; left: 50%; transform: translateX(-50%); text-align: center;">
+                        <div class="menu-title">区县销量对比</div>
+                        <div class="menu-subtitle">销量统计详情</div>
+                    </div>
+                    <div class="nav-right">
+                        <div class="nav-icon" onclick="openExpandSelector()">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- 页面容器 -->
+                <div class="page-container">
+                    <div class="homepage-content">
+                        <!-- 区县销量列表 -->
+                        <div class="mobile-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <i class="fas fa-map-marker-alt" style="color: #f5222d;"></i>
+                                    区县销量统计
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <table class="ranking-table">
+                                    <thead>
+                                        <tr>
+                                            <th>区县名称</th>
+                                            <th>销量</th>
+                                            <th>占比</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 8px;">
+                                                    <div style="width: 12px; height: 12px; background: #1890ff; border-radius: 50%;"></div>
+                                                    <span style="font-weight: 600;">渝中区</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="sales-amount">328万</span></td>
+                                            <td>28.6%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 8px;">
+                                                    <div style="width: 12px; height: 12px; background: #52c41a; border-radius: 50%;"></div>
+                                                    <span style="font-weight: 600;">江北区</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="sales-amount">285万</span></td>
+                                            <td>24.9%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 8px;">
+                                                    <div style="width: 12px; height: 12px; background: #faad14; border-radius: 50%;"></div>
+                                                    <span style="font-weight: 600;">沙坪坝区</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="sales-amount">196万</span></td>
+                                            <td>17.1%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 8px;">
+                                                    <div style="width: 12px; height: 12px; background: #f5222d; border-radius: 50%;"></div>
+                                                    <span style="font-weight: 600;">九龙坡区</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="sales-amount">142万</span></td>
+                                            <td>12.4%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 8px;">
+                                                    <div style="width: 12px; height: 12px; background: #722ed1; border-radius: 50%;"></div>
+                                                    <span style="font-weight: 600;">南岸区</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="sales-amount">89万</span></td>
+                                            <td>7.8%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 8px;">
+                                                    <div style="width: 12px; height: 12px; background: #eb2f96; border-radius: 50%;"></div>
+                                                    <span style="font-weight: 600;">渝北区</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="sales-amount">67万</span></td>
+                                            <td>5.8%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 8px;">
+                                                    <div style="width: 12px; height: 12px; background: #13c2c2; border-radius: 50%;"></div>
+                                                    <span style="font-weight: 600;">大渡口区</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="sales-amount">25万</span></td>
+                                            <td>2.2%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 8px;">
+                                                    <div style="width: 12px; height: 12px; background: #389e0d; border-radius: 50%;"></div>
+                                                    <span style="font-weight: 600;">巴南区</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="sales-amount">14万</span></td>
+                                            <td>1.2%</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- 统计汇总 -->
+                        <div class="mobile-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <i class="fas fa-calculator" style="color: #1890ff;"></i>
+                                    统计汇总
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div class="kpi-grid">
+                                    <div class="kpi-item">
+                                        <div class="kpi-value">1,146万</div>
+                                        <div class="kpi-label">总销量</div>
+                                    </div>
+                                    <div class="kpi-item">
+                                        <div class="kpi-value">8</div>
+                                        <div class="kpi-label">统计区县数</div>
+                                    </div>
+                                    <div class="kpi-item">
+                                        <div class="kpi-value">328万</div>
+                                        <div class="kpi-label">最高销量</div>
+                                    </div>
+                                    <div class="kpi-item">
+                                        <div class="kpi-value">28.6%</div>
+                                        <div class="kpi-label">最高占比</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            districtSalesDetailPage.innerHTML = districtSalesDetailContent;
+            document.body.appendChild(districtSalesDetailPage);
+
+            // 显示动画
+            setTimeout(() => {
+                districtSalesDetailPage.style.transform = 'translateX(0)';
+            }, 10);
+        }
+
+        // 关闭区县销量详情页面
+        function closeDistrictSalesDetailPage() {
+            const districtSalesDetailPage = document.getElementById('districtSalesDetailPage');
+            if (districtSalesDetailPage) {
+                districtSalesDetailPage.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    districtSalesDetailPage.remove();
+                }, 300);
+            }
+        }
+
+        // 打开TOP10站点详情页面
+        function openTop10StationsDetailPage() {
+            // 创建新页面
+            const top10StationsDetailPage = document.createElement('div');
+            top10StationsDetailPage.id = 'top10StationsDetailPage';
+            top10StationsDetailPage.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: #f5f5f5;
+                z-index: 1001;
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+            `;
+
+            const top10StationsDetailContent = `
+                <!-- 导航头 -->
+                <header class="mobile-nav-header">
+                    <div class="nav-left">
+                        <div class="nav-icon" onclick="closeTop10StationsDetailPage()">
+                            <i class="fas fa-arrow-left"></i>
+                        </div>
+                    </div>
+                    <div style="position: absolute; left: 50%; transform: translateX(-50%); text-align: center;">
+                        <div class="menu-title">站点销量排名</div>
+                        <div class="menu-subtitle">全站点销量统计</div>
+                    </div>
+                    <div class="nav-right">
+                        <div class="nav-icon" onclick="openExpandSelector()">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- 页面容器 -->
+                <div class="page-container">
+                    <div class="homepage-content">
+                        <!-- 站点排名列表 -->
+                        <div class="mobile-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <i class="fas fa-store" style="color: #722ed1;"></i>
+                                    站点销量排名
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <table class="ranking-table">
+                                    <thead>
+                                        <tr>
+                                            <th>排名</th>
+                                            <th>站点号</th>
+                                            <th>地址</th>
+                                            <th>销量</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <div class="rank-cell">
+                                                    <i class="fas fa-trophy rank-icon rank-1"></i>
+                                                    <span>1</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="station-id">410100001</span></td>
+                                            <td>朝阳区建国路88号</td>
+                                            <td><span class="sales-amount">24万</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="rank-cell">
+                                                    <i class="fas fa-trophy rank-icon rank-2"></i>
+                                                    <span>2</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="station-id">410100005</span></td>
+                                            <td>海淀区中关村大街1号</td>
+                                            <td><span class="sales-amount">21.8万</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="rank-cell">
+                                                    <i class="fas fa-trophy rank-icon rank-3"></i>
+                                                    <span>3</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="station-id">410100008</span></td>
+                                            <td>昌平区回龙观东大街</td>
+                                            <td><span class="sales-amount">19.2万</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="rank-cell">
+                                                    <span>4</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="station-id">410100012</span></td>
+                                            <td>丰台区南三环西路</td>
+                                            <td><span class="sales-amount">17.5万</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="rank-cell">
+                                                    <span>5</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="station-id">410100015</span></td>
+                                            <td>西城区西单北大街</td>
+                                            <td><span class="sales-amount">16.1万</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="rank-cell">
+                                                    <span>6</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="station-id">410100018</span></td>
+                                            <td>东城区王府井大街</td>
+                                            <td><span class="sales-amount">14.6万</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="rank-cell">
+                                                    <span>7</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="station-id">410100021</span></td>
+                                            <td>石景山区石景山路</td>
+                                            <td><span class="sales-amount">13.2万</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="rank-cell">
+                                                    <span>8</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="station-id">410100024</span></td>
+                                            <td>通州区梨园镇新华大街</td>
+                                            <td><span class="sales-amount">12.8万</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="rank-cell">
+                                                    <span>9</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="station-id">410100027</span></td>
+                                            <td>大兴区黄村镇兴华大街</td>
+                                            <td><span class="sales-amount">11.4万</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="rank-cell">
+                                                    <span>10</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="station-id">410100030</span></td>
+                                            <td>房山区良乡镇长虹大街</td>
+                                            <td><span class="sales-amount">10.9万</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="rank-cell">
+                                                    <span>11</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="station-id">410100033</span></td>
+                                            <td>顺义区后沙峪镇火沙路</td>
+                                            <td><span class="sales-amount">9.8万</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="rank-cell">
+                                                    <span>12</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="station-id">410100036</span></td>
+                                            <td>密云区密云镇新中街</td>
+                                            <td><span class="sales-amount">9.1万</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="rank-cell">
+                                                    <span>13</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="station-id">410100039</span></td>
+                                            <td>延庆区延庆镇湖南路</td>
+                                            <td><span class="sales-amount">8.4万</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="rank-cell">
+                                                    <span>14</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="station-id">410100042</span></td>
+                                            <td>怀柔区怀柔镇青春路</td>
+                                            <td><span class="sales-amount">7.9万</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="rank-cell">
+                                                    <span>15</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="station-id">410100045</span></td>
+                                            <td>平谷区平谷镇建设街</td>
+                                            <td><span class="sales-amount">7.2万</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="rank-cell">
+                                                    <span>16</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="station-id">410100048</span></td>
+                                            <td>门头沟区门头沟镇新桥大街</td>
+                                            <td><span class="sales-amount">6.8万</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="rank-cell">
+                                                    <span>17</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="station-id">410100051</span></td>
+                                            <td>朝阳区三里屯路</td>
+                                            <td><span class="sales-amount">6.3万</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="rank-cell">
+                                                    <span>18</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="station-id">410100054</span></td>
+                                            <td>海淀区学院路</td>
+                                            <td><span class="sales-amount">5.9万</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="rank-cell">
+                                                    <span>19</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="station-id">410100057</span></td>
+                                            <td>昌平区天通苑北路</td>
+                                            <td><span class="sales-amount">5.4万</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="rank-cell">
+                                                    <span>20</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="station-id">410100060</span></td>
+                                            <td>丰台区丰台路</td>
+                                            <td><span class="sales-amount">5.1万</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="rank-cell">
+                                                    <span>21</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="station-id">410100063</span></td>
+                                            <td>西城区德胜门外大街</td>
+                                            <td><span class="sales-amount">4.8万</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="rank-cell">
+                                                    <span>22</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="station-id">410100066</span></td>
+                                            <td>东城区东四十条</td>
+                                            <td><span class="sales-amount">4.5万</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="rank-cell">
+                                                    <span>23</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="station-id">410100069</span></td>
+                                            <td>石景山区八角北路</td>
+                                            <td><span class="sales-amount">4.2万</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="rank-cell">
+                                                    <span>24</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="station-id">410100072</span></td>
+                                            <td>通州区运河大街</td>
+                                            <td><span class="sales-amount">3.9万</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="rank-cell">
+                                                    <span>25</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="station-id">410100075</span></td>
+                                            <td>大兴区瀛海镇南海路</td>
+                                            <td><span class="sales-amount">3.6万</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            top10StationsDetailPage.innerHTML = top10StationsDetailContent;
+            document.body.appendChild(top10StationsDetailPage);
+
+            // 显示动画
+            setTimeout(() => {
+                top10StationsDetailPage.style.transform = 'translateX(0)';
+            }, 10);
+        }
+
+        // 关闭TOP10站点详情页面
+        function closeTop10StationsDetailPage() {
+            const top10StationsDetailPage = document.getElementById('top10StationsDetailPage');
+            if (top10StationsDetailPage) {
+                top10StationsDetailPage.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    top10StationsDetailPage.remove();
                 }, 300);
             }
         }
@@ -2378,8 +4110,8 @@
 
         function updateCharts() {
             // 生成新的随机数据
-            const newSalesData = Array.from({length: 9}, () => Math.floor(Math.random() * 40) + 10);
-            const newYesterdayData = Array.from({length: 9}, () => Math.floor(Math.random() * 35) + 8);
+            const newSalesData = Array.from({length: 18}, () => Math.floor(Math.random() * 40) + 10);
+            const newYesterdayData = Array.from({length: 18}, () => Math.floor(Math.random() * 35) + 8);
             
             charts.trend.data.datasets[0].data = newSalesData;
             charts.trend.data.datasets[1].data = newYesterdayData;
